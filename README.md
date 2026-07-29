@@ -10,7 +10,7 @@ Astro(SSG)로 정적 생성하고, 콘텐츠는 Notion API에서 빌드 시점�
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321/story-of-the-light/
+npm run dev      # http://localhost:4321/Story_of_the_Light/
 ```
 
 `.env`가 없어도 샘플 데이터로 화면이 뜹니다. 색 조합과 레이아웃을 먼저 확인한 뒤 노션을 붙이세요.
@@ -91,7 +91,12 @@ src/
 
 `번호`는 숫자 속성이든 ID 속성이든 똑같이 읽습니다. ID 속성에 접두사를 지정하면(`LOG` 등) 사이트에도 `LOG-12` 형태로 표시됩니다.
 
-정렬 방향은 `src/config/sources.ts`에서 카테고리별로 바꿉니다. 기본값은 Profile·Story가 `asc`(직접 매긴 번호 순), Logs·Screenshots·Gallery가 `desc`(최신 번호가 위로)입니다.
+정렬 방향은 **번호 속성 유형을 보고 자동으로 정해집니다.**
+
+- **숫자 속성** → 오름차순. 직접 매긴 1, 2, 3…이 곧 읽는 순서니까요. (Profile, Story)
+- **ID 속성** → 내림차순. 자동 증가하므로 가장 나중에 올린 것이 맨 위로 옵니다. (Logs, Screenshots, Gallery)
+
+어느 카테고리의 `번호`를 숫자에서 ID로 바꾸면 정렬도 알아서 따라갑니다. 이 판단을 뒤집고 싶을 때만 `src/config/sources.ts`의 해당 항목에 `direction: 'asc'` 또는 `'desc'`를 적어 주세요.
 
 ### 이미지를 어디에 넣을지
 
@@ -148,9 +153,8 @@ src/
 
 ## GitHub Pages 배포
 
-1. `astro.config.mjs`에서 `site`와 `base`를 실제 저장소에 맞게 고칩니다.
-   - 프로젝트 페이지: `site: 'https://아이디.github.io'`, `base: '/저장소이름'`
-   - 유저 페이지(`아이디.github.io` 저장소): `base: '/'`
+1. `astro.config.mjs`는 `https://surihwa.github.io/Story_of_the_Light/`에 맞춰 설정돼 있습니다.
+   저장소 이름을 바꾸면 `base`도 함께 바꿔야 CSS와 내부 링크가 살아 있습니다.
 2. 저장소 **Settings → Pages → Source**를 `GitHub Actions`로 바꿉니다.
 3. **Settings → Secrets and variables → Actions**에 일곱 개를 등록합니다.
    `NOTION_TOKEN` · `NOTION_PROFILE_DB` · `NOTION_STORY_DB` · `NOTION_LOGS_DB` · `NOTION_SCREENSHOTS_DB` · `NOTION_GALLERY_DB` · `NOTION_TIMELINE_DB`

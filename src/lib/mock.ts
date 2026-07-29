@@ -9,6 +9,7 @@ function post(p: Partial<Post> & Pick<Post, 'id' | 'section'>): Post {
   return {
     number: null,
     numberLabel: '',
+    numberKind: null,
     title: '',
     tabs: [],
     characters: [],
@@ -29,53 +30,53 @@ const LOG_LONG = Array.from({ length: 16 }, (_, i) =>
 
 export const mockPosts: Post[] = [
   post({
-    id: 'mock-profile-1', section: 'profile', number: 1, numberLabel: '1',
+    id: 'mock-profile-1', section: 'profile', number: 1, numberLabel: '1', numberKind: 'number',
     title: '서리화', tabs: ['seorihwa'], characters: ['서리화'],
     text: '에오르제아에 흘러들어온 빛의 전사. 말수가 적고, 기록하는 습관이 있다.',
     html: '<p>에오르제아에 흘러들어온 빛의 전사. 말수가 적고, 기록하는 습관이 있다.</p><h3>기본</h3><ul><li>종족 · 미코테</li><li>직업 · 백마도사</li></ul>',
   }),
   post({
-    id: 'mock-profile-2', section: 'profile', number: 2, numberLabel: '2',
+    id: 'mock-profile-2', section: 'profile', number: 2, numberLabel: '2', numberKind: 'number',
     title: '카르네아데스', tabs: ['azem'], characters: ['카르네아데스'],
     text: '열두 번째 자리. 어디에도 오래 머무르지 않는 여행자.',
     html: '<p>열두 번째 자리. 어디에도 오래 머무르지 않는 여행자.</p>',
   }),
   post({
-    id: 'mock-profile-3', section: 'profile', number: 3, numberLabel: '3',
+    id: 'mock-profile-3', section: 'profile', number: 3, numberLabel: '3', numberKind: 'number',
     title: '야슈톨라', tabs: ['sangseogo'], characters: ['야슈톨라'],
     text: '샤렐리안의 현자. 필요한 말만 하고, 필요할 때 반드시 온다.',
     html: '<p>샤렐리안의 현자.</p>',
   }),
   post({
-    id: 'mock-story-1', section: 'story', number: 1, numberLabel: '1',
+    id: 'mock-story-1', section: 'story', number: 1, numberLabel: '1', numberKind: 'number',
     title: '첫눈이 내리던 쿠르잔', tabs: ['seorihwa'], date: '2024-02-11',
     text: '서리화가 처음으로 뒤를 돌아보지 않고 걸었던 날의 기록. 눈은 저녁까지 그치지 않았다.',
     html: '<p>서리화가 처음으로 뒤를 돌아보지 않고 걸었던 날의 기록.</p>',
   }),
   post({
-    id: 'mock-story-2', section: 'story', number: 2, numberLabel: '2',
+    id: 'mock-story-2', section: 'story', number: 2, numberLabel: '2', numberKind: 'number',
     title: '흑와단 신병 보고서', tabs: ['squadron'], date: '2024-03-30',
     text: '소대에 배속된 첫 주, 훈련장에서 벌어진 소동에 대하여.',
     html: '<p>소대에 배속된 첫 주, 훈련장에서 벌어진 소동.</p>',
   }),
   post({
-    id: 'mock-log-1', section: 'logs', number: 12, numberLabel: 'LOG-12',
+    id: 'mock-log-1', section: 'logs', number: 12, numberLabel: 'LOG-12', numberKind: 'id',
     tabs: ['squadron'], text: LOG_SHORT,
     html: LOG_SHORT.split('\n').map((l) => `<p>${l}</p>`).join(''),
   }),
   post({
-    id: 'mock-log-2', section: 'logs', number: 11, numberLabel: 'LOG-11',
+    id: 'mock-log-2', section: 'logs', number: 11, numberLabel: 'LOG-11', numberKind: 'id',
     tabs: ['sangseogo'],
     text: '차를 세 번 끓였다. 두 번은 식었고, 세 번째는 마셨다. 아무 일도 일어나지 않았다.',
     html: '<p>차를 세 번 끓였다. 두 번은 식었고, 세 번째는 마셨다.</p><p>아무 일도 일어나지 않았다.</p>',
   }),
   post({
-    id: 'mock-log-3', section: 'logs', number: 10, numberLabel: 'LOG-10',
+    id: 'mock-log-3', section: 'logs', number: 10, numberLabel: 'LOG-10', numberKind: 'id',
     tabs: ['seorihwa'], text: LOG_LONG,
     html: LOG_LONG.split('\n').map((l) => `<p>${l}</p>`).join(''),
   }),
   post({
-    id: 'mock-log-4', section: 'logs', number: 9, numberLabel: 'LOG-9',
+    id: 'mock-log-4', section: 'logs', number: 9, numberLabel: 'LOG-9', numberKind: 'id',
     tabs: ['lorenti'],
     text: '노란 등불과 밤하늘이 나란히 놓였던 축제의 밤. 로레트는 끝까지 등불을 놓지 않았다.',
     html: '<p>노란 등불과 밤하늘이 나란히 놓였던 축제의 밤.</p>',

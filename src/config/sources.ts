@@ -8,16 +8,16 @@ import type { SourceConfig } from '@types';
  *  - `탭` (다중 선택) : 어느 메인 탭에 노출할지. tabs.ts 의 label 과 같아야 합니다.
  *  - 본문은 노션 페이지 안에 그냥 씁니다.
  *
- * direction
- *  - 'asc'  : 번호가 작은 것부터 (수동으로 매긴 순서를 그대로 따라갈 때)
- *  - 'desc' : 번호가 큰 것부터 (최신 업로드를 위로 올릴 때)
+ * 정렬 방향은 `번호` 속성 유형을 보고 자동으로 정합니다.
+ *  - 숫자 속성 → 오름차순. 1화, 2화… 직접 매긴 순서를 그대로 따라갑니다.
+ *  - ID 속성   → 내림차순. 가장 나중에 추가한 것이 맨 위로 옵니다.
+ * 이 판단을 뒤집고 싶은 카테고리에만 `direction: 'asc' | 'desc'` 를 적어 주세요.
  */
 export const sources: SourceConfig[] = [
   {
     section: 'profile',
     env: 'NOTION_PROFILE_DB',
     numberProp: '번호',
-    direction: 'asc',
     titleProp: '캐릭터',
     characterProp: '캐릭터',
   },
@@ -25,13 +25,12 @@ export const sources: SourceConfig[] = [
     section: 'story',
     env: 'NOTION_STORY_DB',
     numberProp: '번호',
-    direction: 'asc',
     titleProp: '제목',
     dateProp: '날짜',
   },
-  { section: 'logs', env: 'NOTION_LOGS_DB', numberProp: '번호', direction: 'desc' },
-  { section: 'screenshots', env: 'NOTION_SCREENSHOTS_DB', numberProp: '번호', direction: 'desc' },
-  { section: 'gallery', env: 'NOTION_GALLERY_DB', numberProp: '번호', direction: 'desc' },
+  { section: 'logs', env: 'NOTION_LOGS_DB', numberProp: '번호' },
+  { section: 'screenshots', env: 'NOTION_SCREENSHOTS_DB', numberProp: '번호' },
+  { section: 'gallery', env: 'NOTION_GALLERY_DB', numberProp: '번호' },
 ];
 
 /** 탭 속성 이름 (모든 DB 공통) */

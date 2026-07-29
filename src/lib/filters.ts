@@ -20,9 +20,18 @@ export function filterPosts(posts: Post[], tab: MainTab, section: SectionId): Po
   return sortPosts(inSection.filter((p) => p.tabs.includes(tab.id)), section);
 }
 
-/** 카테고리별로 정해 둔 방향대로 번호 순 정렬합니다. 번호가 없으면 뒤로 보냅니다. */
+/**
+ * 번호 순으로 정렬합니다. 번호가 없는 글은 뒤로 보냅니다.
+ *
+ * 방향은 번호를 어느 속성에서 읽었는지를 보고 정합니다.
+ *  - 숫자 속성 → 오름차순. 직접 매긴 1, 2, 3… 순서가 곧 읽는 순서니까요.
+ *  - ID 속성   → 내림차순. 자동 증가하므로 가장 나중에 올린 것이 맨 위로 옵니다.
+ * `sources.ts` 에 `direction` 을 적어 두면 그쪽이 우선합니다.
+ */
 export function sortPosts(posts: Post[], section: SectionId): Post[] {
-  const direction = sources.find((s) => s.section === section)?.direction ?? 'asc';
+  const override = sources.find((s) => s.section === section)?.direction;
+  const usesId = posts.some((p) => p.numberKind === 'id');
+  const direction = override ?? (usesId ? 'desc' : 'asc');
   const sign = direction === 'asc' ? 1 : -1;
 
   return [...posts].sort((a, b) => {

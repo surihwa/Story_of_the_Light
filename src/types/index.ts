@@ -52,6 +52,8 @@ export interface Post {
   number: number | null;
   /** 화면에 찍히는 번호 표기. ID 속성이면 접두사까지 포함합니다. */
   numberLabel: string;
+  /** 번호를 어느 속성에서 읽었는지. 정렬 방향을 여기서 정합니다. */
+  numberKind: 'number' | 'id' | null;
   /** Story 는 제목, Profile 은 캐릭터명, Logs·Screenshots·Gallery 는 빈 문자열 */
   title: string;
   tabs: string[];
@@ -88,8 +90,13 @@ export interface SourceConfig {
   env: string;
   /** 번호 속성 이름 */
   numberProp: string;
-  /** 번호 정렬 방향 */
-  direction: 'asc' | 'desc';
+  /**
+   * 번호 정렬 방향.
+   * 비워 두면 번호 속성 유형을 보고 자동으로 정합니다.
+   *  - 숫자 속성 → 오름차순 (직접 매긴 순서대로)
+   *  - ID 속성   → 내림차순 (나중에 추가한 것이 위로)
+   */
+  direction?: 'asc' | 'desc';
   /** 제목 속성 이름. 없으면 카드에 제목을 찍지 않습니다. */
   titleProp?: string;
   /** 캐릭터 속성 이름 */

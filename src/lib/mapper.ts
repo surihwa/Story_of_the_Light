@@ -38,17 +38,21 @@ function list(prop: Props[string] | undefined): string[] {
  * 숫자 속성과 ID(고유 ID) 속성을 모두 받아들이므로,
  * DB 마다 어느 쪽을 썼는지 신경 쓸 필요가 없습니다.
  */
-function readNumber(prop: Props[string] | undefined): { value: number | null; label: string } {
+function readNumber(prop: Props[string] | undefined): {
+  value: number | null;
+  label: string;
+  kind: 'number' | 'id' | null;
+} {
   if (prop?.type === 'number' && typeof prop.number === 'number') {
-    return { value: prop.number, label: String(prop.number) };
+    return { value: prop.number, label: String(prop.number), kind: 'number' };
   }
   if (prop?.type === 'unique_id') {
     const n = prop.unique_id.number;
-    if (typeof n !== 'number') return { value: null, label: '' };
+    if (typeof n !== 'number') return { value: null, label: '', kind: 'id' };
     const prefix = prop.unique_id.prefix;
-    return { value: n, label: prefix ? `${prefix}-${n}` : String(n) };
+    return { value: n, label: prefix ? `${prefix}-${n}` : String(n), kind: 'id' };
   }
-  return { value: null, label: '' };
+  return { value: null, label: '', kind: null };
 }
 
 async function filesOf(prop: Props[string] | undefined): Promise<MediaItem[]> {
@@ -79,7 +83,7 @@ export async function toPost(
   tabLabelToId: Map<string, string>,
 ): Promise<Post> {
   const p = page.properties;
-  const { value, label } = readNumber(p[source.numberProp]);
+  const { value, label, kind } = readNumber(p[source.numberProp]);
 
   const tabs = list(p[TAB_PROP])
     .map((name) => tabLabelToId.get(name.trim()))
@@ -90,6 +94,7 @@ export async function toPost(
     section: source.section,
     number: value,
     numberLabel: label,
+    numberKind: kind,
     title: source.titleProp ? plain(p[source.titleProp]) : '',
     tabs,
     characters: source.characterProp ? list(p[source.characterProp]) : [],

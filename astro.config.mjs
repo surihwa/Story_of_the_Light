@@ -2,11 +2,10 @@ import { defineConfig } from 'astro/config';
 import notionAssets from './integrations/notion-assets.mjs';
 
 // GitHub Pages 배포 설정.
-// - 프로젝트 페이지(https://USER.github.io/REPO)면 base 를 '/REPO' 로 둡니다.
-// - 유저 페이지(https://USER.github.io)면 base 를 '/' 로 바꾸세요.
+// 저장소 이름을 바꾸면 base 도 함께 바꿔야 CSS 와 내부 링크가 살아 있습니다.
 export default defineConfig({
-  site: 'https://USERNAME.github.io',
-  base: '/story-of-the-light',
+  site: 'https://surihwa.github.io',
+  base: '/Story_of_the_Light',
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
