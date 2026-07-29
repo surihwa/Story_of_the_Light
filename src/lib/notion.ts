@@ -9,12 +9,12 @@ const token = process.env.NOTION_TOKEN ?? import.meta.env.NOTION_TOKEN;
 /** 토큰이 없으면 null — 이 경우 상위에서 샘플 데이터로 대체합니다. */
 export const notion = token ? new Client({ auth: token }) : null;
 
-export const dbIds = {
-  posts: process.env.NOTION_POSTS_DB ?? import.meta.env.NOTION_POSTS_DB ?? '',
-  timeline: process.env.NOTION_TIMELINE_DB ?? import.meta.env.NOTION_TIMELINE_DB ?? '',
-};
+/** 환경 변수 이름으로 DB ID 를 읽습니다. */
+export function dbId(envKey: string): string {
+  return (process.env[envKey] ?? (import.meta.env as Record<string, string>)[envKey] ?? '').trim();
+}
 
-export const isNotionReady = Boolean(notion && dbIds.posts);
+export const hasToken = Boolean(notion);
 
 /** 페이지네이션까지 모두 따라가며 DB 전체를 읽습니다. */
 export async function queryAll(databaseId: string): Promise<PageObjectResponse[]> {

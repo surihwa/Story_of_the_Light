@@ -1,34 +1,30 @@
 ---
 import type { Post } from '@types';
 import { getCharacter } from '@config/characters';
+import { excerpt } from '@lib/blocks';
 import { colorVars } from '@lib/theme';
 import { url } from '@lib/url';
 
 interface Props { post: Post }
 const { post } = Astro.props;
 
-const character = getCharacter(post.characters[0] ?? post.title);
+const name = post.characters[0] ?? post.title;
+const character = getCharacter(name);
 const color = character?.color ?? '#64748B';
-const initial = (character?.name ?? post.title).slice(0, 1);
+const preview = excerpt(post.text, 150);
 ---
 
 <article class="profile panel" style={`${colorVars(color)};border-left:3px solid ${color}`}>
   {post.cover
-    ? <img class="profile__portrait" src={post.cover} alt={`${post.title} 초상`} loading="lazy" />
-    : <div class="profile__portrait--empty" aria-hidden="true">{initial}</div>}
+    ? <img class="profile__portrait" src={post.cover} alt={`${name} 초상`} loading="lazy" />
+    : <div class="profile__portrait--empty" aria-hidden="true">{name.slice(0, 1)}</div>}
 
   <div class="profile__body">
     {character?.role && <p class="profile__role">{character.role}</p>}
-    <h2 class="profile__name">{post.title}</h2>
-    {post.summary && <p style="margin-top:.6rem;color:var(--ink-2)">{post.summary}</p>}
-    {post.tags.length > 0 && (
-      <p class="card__foot">{post.tags.map((tag) => <span class="chip">{tag}</span>)}</p>
-    )}
-    <p style="margin-top:1rem">
-      <a
-        href={url(`post/${post.id}`)}
-        style={`font-family:var(--font-mono);font-size:var(--fs-sm);color:${color}`}
-      >자세히 보기 →</a>
+    <h2 class="profile__name">{character?.name ?? name}</h2>
+    {preview && <p class="profile__preview">{preview}</p>}
+    <p class="profile__link">
+      <a href={url(`post/${post.id}`)} style={`color:${color}`}>자세히 보기 →</a>
     </p>
   </div>
 </article>

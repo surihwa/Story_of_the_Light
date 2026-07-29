@@ -31,7 +31,11 @@ jobs:
       - name: Build with Notion content
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_POSTS_DB: ${{ secrets.NOTION_POSTS_DB }}
+          NOTION_PROFILE_DB: ${{ secrets.NOTION_PROFILE_DB }}
+          NOTION_STORY_DB: ${{ secrets.NOTION_STORY_DB }}
+          NOTION_LOGS_DB: ${{ secrets.NOTION_LOGS_DB }}
+          NOTION_SCREENSHOTS_DB: ${{ secrets.NOTION_SCREENSHOTS_DB }}
+          NOTION_GALLERY_DB: ${{ secrets.NOTION_GALLERY_DB }}
           NOTION_TIMELINE_DB: ${{ secrets.NOTION_TIMELINE_DB }}
         run: npm run build
       - uses: actions/configure-pages@v5

@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import SubNav from '@components/SubNav.astro';
 import PostCard from '@components/PostCard.astro';
+import LogCard from '@components/LogCard.astro';
 import ProfileCard from '@components/ProfileCard.astro';
 import MediaGrid from '@components/MediaGrid.astro';
 import EmptyState from '@components/EmptyState.astro';
@@ -23,8 +24,7 @@ const posts = filterPosts(await getPosts(), tab, section);
 
 /** 세계 + Profile 은 모든 캐릭터의 프로필을 한데 모으는 예외 화면입니다. */
 const isAllProfiles = tab.kind === 'world' && section === 'profile';
-const isProfileLayout = section === 'profile';
-const isMediaLayout = section === 'screenshots' || section === 'gallery';
+const isMedia = section === 'screenshots' || section === 'gallery';
 ---
 
 <BaseLayout title={`${tab.label} · ${sub.label}`} activeTab={tab.id}>
@@ -32,17 +32,20 @@ const isMediaLayout = section === 'screenshots' || section === 'gallery';
 
   <header class="page-head">
     <h1 class="page-head__title">{isAllProfiles ? '모든 캐릭터 프로필' : tab.label}</h1>
-    <p class="page-head__caption">{isAllProfiles ? '세계 · 전체 모아 보기' : tab.caption}</p>
     <p class="page-head__count">{posts.length} entries</p>
   </header>
 
   {posts.length === 0 ? (
     <div style="padding-block:1.5rem 3rem"><EmptyState /></div>
-  ) : isMediaLayout ? (
-    <MediaGrid posts={posts} tab={tab} />
-  ) : isProfileLayout ? (
+  ) : isMedia ? (
+    <MediaGrid posts={posts} />
+  ) : section === 'profile' ? (
     <div class="grid grid--wide">
       {posts.map((post) => <ProfileCard post={post} />)}
+    </div>
+  ) : section === 'logs' ? (
+    <div class="log-columns">
+      {posts.map((post) => <LogCard post={post} tab={tab} />)}
     </div>
   ) : (
     <div class="grid">

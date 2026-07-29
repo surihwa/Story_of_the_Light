@@ -44,39 +44,56 @@ export interface MediaItem {
   caption?: string;
 }
 
-/** 게시물 DB 의 행 하나 */
+/** 카테고리별 DB 한 행 */
 export interface Post {
   id: string;
-  title: string;
-  /** 노출될 메인 탭 슬러그 목록 */
-  tabs: string[];
   section: SectionId;
+  /** 정렬에 쓰는 번호. 숫자 속성이든 ID 속성이든 여기로 모입니다. */
+  number: number | null;
+  /** 화면에 찍히는 번호 표기. ID 속성이면 접두사까지 포함합니다. */
+  numberLabel: string;
+  /** Story 는 제목, Profile 은 캐릭터명, Logs·Screenshots·Gallery 는 빈 문자열 */
+  title: string;
+  tabs: string[];
   characters: string[];
-  summary: string;
   date?: string;
-  tags: string[];
   cover?: string;
   images: MediaItem[];
-  order: number;
-  /** 렌더링된 본문 HTML. 목록 페이지에서는 비어 있을 수 있습니다. */
+  /** 렌더링된 본문 HTML */
   html: string;
+  /** 본문 평문. 미리보기에 씁니다. */
+  text: string;
 }
 
 /** 연표 DB 의 행 하나 — [ 시기 / 관련 캐릭터 / 내용 ] */
 export interface TimelineEntry {
   id: string;
-  /** 원문 표기 그대로. 예: '-10년', '신생', '칠흑' */
   period: string;
   characters: string[];
   body: string;
-  /** 정렬용 파생 값 */
   sortKey: number;
   order: number;
 }
 
-/** 시기별로 묶인 연표 그룹 */
 export interface TimelineGroup {
   period: string;
   caption: string;
   entries: TimelineEntry[];
+}
+
+/** 카테고리 하나에 대응하는 노션 DB 설정 */
+export interface SourceConfig {
+  section: SectionId;
+  /** 환경 변수 이름 */
+  env: string;
+  /** 번호 속성 이름 */
+  numberProp: string;
+  /** 번호 정렬 방향 */
+  direction: 'asc' | 'desc';
+  /** 제목 속성 이름. 없으면 카드에 제목을 찍지 않습니다. */
+  titleProp?: string;
+  /** 캐릭터 속성 이름 */
+  characterProp?: string;
+  /** 날짜 속성 이름 */
+  dateProp?: string;
 }

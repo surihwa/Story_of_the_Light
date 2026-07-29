@@ -1,0 +1,35 @@
+---
+import type { MainTab, Post } from '@types';
+import { url } from '@lib/url';
+
+interface Props { post: Post; tab: MainTab }
+const { post, tab } = Astro.props;
+
+/** 제목은 쓰지 않고 본문만 보여 줍니다. 10줄이 넘으면 잘리고, 눌러서 전문을 봅니다. */
+const edge = tab.kind === 'dual' ? 'dual-edge' : 'single-edge';
+---
+
+<article class={`log-card panel ${edge}`}>
+  <a class="log-card__link" href={url(`post/${post.id}`)}>
+    {post.numberLabel && <p class="log-card__no">{post.numberLabel}</p>}
+    <div class="log-card__clip" data-log-clip>
+      <div class="log-card__body prose" set:html={post.html} />
+    </div>
+    <p class="log-card__more" hidden>이어서 읽기 →</p>
+  </a>
+</article>
+
+<script>
+  // 10줄 제한에 실제로 걸린 카드에만 '이어서 읽기'를 띄웁니다.
+  const mark = () => {
+    document.querySelectorAll<HTMLElement>('[data-log-clip]').forEach((clip) => {
+      const clipped = clip.scrollHeight - clip.clientHeight > 2;
+      clip.dataset.clipped = String(clipped);
+      const more = clip.parentElement?.querySelector<HTMLElement>('.log-card__more');
+      if (more) more.hidden = !clipped;
+    });
+  };
+  mark();
+  window.addEventListener('resize', mark);
+  document.fonts?.ready.then(mark);
+</script>

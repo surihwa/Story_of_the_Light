@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import notionAssets from './integrations/notion-assets.mjs';
 
 // GitHub Pages 배포 설정.
 // - 프로젝트 페이지(https://USER.github.io/REPO)면 base 를 '/REPO' 로 둡니다.
@@ -9,4 +10,5 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  integrations: [notionAssets()],
 });

@@ -1,33 +1,28 @@
 ---
 import type { MainTab, Post } from '@types';
-import CharacterBadge from './CharacterBadge.astro';
+import { excerpt } from '@lib/blocks';
 import { url } from '@lib/url';
 
 interface Props { post: Post; tab: MainTab; index?: number }
 const { post, tab, index = 0 } = Astro.props;
 
 const edge = tab.kind === 'dual' ? 'dual-edge' : 'single-edge';
-const delay = `${Math.min(index, 8) * 45}ms`;
+const preview = excerpt(post.text, 130);
 ---
 
-<article class={`card panel ${edge}`} style={`animation-delay:${delay}`}>
+<article class={`card panel ${edge}`} style={`animation-delay:${Math.min(index, 8) * 45}ms`}>
   <a href={url(`post/${post.id}`)}>
     {post.cover && <img class="card__cover" src={post.cover} alt="" loading="lazy" />}
     <div class="card__body">
-      {(post.date || post.tags.length > 0) && (
+      {(post.numberLabel || post.date) && (
         <p class="card__meta">
+          {post.numberLabel && <span>{post.numberLabel}</span>}
+          {post.numberLabel && post.date && <span aria-hidden="true">◆</span>}
           {post.date && <time datetime={post.date}>{post.date}</time>}
-          {post.date && post.tags.length > 0 && <span aria-hidden="true">◆</span>}
-          {post.tags[0] && <span>{post.tags[0]}</span>}
         </p>
       )}
-      <h2 class="card__title">{post.title}</h2>
-      {post.summary && <p class="card__summary">{post.summary}</p>}
-      {post.characters.length > 0 && (
-        <p class="card__foot">
-          {post.characters.map((name) => <CharacterBadge name={name} />)}
-        </p>
-      )}
+      {post.title && <h2 class="card__title">{post.title}</h2>}
+      {preview && <p class="card__preview">{preview}</p>}
     </div>
   </a>
 </article>

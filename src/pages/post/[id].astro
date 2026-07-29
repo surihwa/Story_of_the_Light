@@ -17,44 +17,34 @@ const { post } = Astro.props as { post: Post };
 /** 어느 탭에서 왔는지 알 수 없으므로, 이 글이 속한 첫 탭 색을 씁니다. */
 const homeTab = getTab(post.tabs[0] ?? '') ?? mainTabs.find((t) => t.kind === 'world')!;
 const sub = getSubTab(post.section)!;
+
+/** 본문 이미지는 이미 html 안에 들어 있으므로, 파일 속성으로 붙인 것만 아래에 따로 깝니다. */
+const isMedia = post.section === 'screenshots' || post.section === 'gallery';
+const extraImages = isMedia ? post.images.filter((img) => !post.html.includes(img.src)) : [];
 ---
 
-<BaseLayout title={post.title} activeTab={homeTab.id}>
+<BaseLayout title={post.title || post.numberLabel || sub.label} activeTab={homeTab.id}>
   <article class="article">
     <header class="article__head">
       <p class="eyebrow">{homeTab.label} · {sub.label}</p>
-      <h1 class="article__title">{post.title}</h1>
-      {post.summary && <p style="margin-top:.8rem;color:var(--ink-2)">{post.summary}</p>}
+      {post.title && <h1 class="article__title">{post.title}</h1>}
       <div class="article__meta">
+        {post.numberLabel && <span class="chip">{post.numberLabel}</span>}
         {post.date && <time class="chip" datetime={post.date}>{post.date}</time>}
         {post.characters.map((name) => <CharacterBadge name={name} />)}
-        {post.tags.map((tag) => <span class="chip">{tag}</span>)}
       </div>
     </header>
 
-    {post.cover && (
-      <img
-        src={post.cover}
-        alt=""
-        style="margin-top:2rem;border:1px solid var(--line);border-radius:var(--radius)"
-      />
-    )}
-
     <div class="article__body prose" set:html={post.html} />
 
-    {post.images.length > 0 && (
+    {extraImages.length > 0 && (
       <div class="article__gallery">
-        {post.images.map((image) => (
-          <img
-            src={image.src}
-            alt={image.alt}
-            loading="lazy"
-            style="border:1px solid var(--line);border-radius:var(--radius)"
-          />
+        {extraImages.map((image) => (
+          <img class="article__image" src={image.src} alt={image.alt} loading="lazy" />
         ))}
       </div>
     )}
 
-    <a class="article__back" href={url(`${homeTab.id}/${post.section}`)}>← {homeTab.label} · {sub.label} 로 돌아가기</a>
+    <a class="article__back" href={url(`${homeTab.id}/${post.section}`)}>← {homeTab.label} · {sub.label}</a>
   </article>
 </BaseLayout>

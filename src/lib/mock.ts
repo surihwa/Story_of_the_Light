@@ -2,97 +2,85 @@ import type { Post, TimelineEntry } from '@types';
 import { periodSortKey } from './timeline';
 
 /**
- * 노션 토큰이 없을 때 쓰는 샘플 데이터.
+ * 노션 설정이 없을 때 쓰는 샘플 데이터.
  * 화면과 색 조합을 바로 확인해 보라고 넣어 둔 것이라, 연동 후에는 자동으로 무시됩니다.
  */
-const raw: Omit<Post, 'images'>[] = [
-  {
-    id: 'sample-seorihwa-profile',
-    title: '서리화',
-    tabs: ['seorihwa'],
-    section: 'profile',
-    characters: ['서리화'],
-    summary: '에오르제아에 흘러들어온 빛의 전사. 말수가 적고, 기록하는 습관이 있다.',
-    date: '',
-    tags: ['미코테', '빛의 전사'],
-    order: 100,
-    html: '<p>표본 데이터입니다. 노션을 연결하면 이 자리에 실제 프로필이 들어옵니다.</p><h3>기본</h3><ul><li>종족 · 미코테</li><li>직업 · 백마도사</li><li>고향 · 림사 로민사</li></ul>',
-  },
-  {
-    id: 'sample-seorihwa-story',
-    title: '첫눈이 내리던 쿠르잔',
-    tabs: ['seorihwa'],
-    section: 'story',
-    characters: ['서리화'],
-    summary: '서리화가 처음으로 뒤를 돌아보지 않고 걸었던 날의 기록.',
-    date: '2024-02-11',
-    tags: ['본편', '독백'],
-    order: 90,
-    html: '<p>표본 본문입니다.</p>',
-  },
-  {
-    id: 'sample-azem-profile',
-    title: '카르네아데스',
-    tabs: ['azem'],
-    section: 'profile',
-    characters: ['카르네아데스'],
-    summary: '열두 번째 자리. 어디에도 오래 머무르지 않는 여행자.',
-    date: '',
-    tags: ['고대인', '아젬'],
-    order: 100,
-    html: '<p>표본 데이터입니다.</p>',
-  },
-  {
-    id: 'sample-sangseogo-log',
-    title: '차를 세 번 끓인 밤',
-    tabs: ['sangseogo'],
-    section: 'logs',
-    characters: ['서리화', '야슈톨라'],
-    summary: '아무 일도 일어나지 않았고, 그래서 오래 기억에 남은 밤.',
-    date: '2024-05-02',
-    tags: ['일상', '썰'],
-    order: 80,
-    html: '<p>표본 본문입니다.</p>',
-  },
-  {
-    id: 'sample-lorenti-log',
-    title: '등불 두 개',
-    tabs: ['lorenti'],
-    section: 'logs',
-    characters: ['로레트', '이스노티'],
-    summary: '노란 등불과 밤하늘이 나란히 놓였던 축제의 밤.',
-    date: '2024-08-17',
-    tags: ['축제'],
-    order: 80,
-    html: '<p>표본 본문입니다.</p>',
-  },
-  {
-    id: 'sample-squadron-story',
-    title: '흑와단 신병 보고서',
-    tabs: ['squadron'],
-    section: 'story',
-    characters: ['서리화', '그레틴', '모험가 소대'],
-    summary: '소대에 배속된 첫 주, 훈련장에서 벌어진 소동.',
-    date: '2024-03-30',
-    tags: ['소대', '훈련'],
-    order: 70,
-    html: '<p>표본 본문입니다.</p>',
-  },
-  {
-    id: 'sample-world-note',
-    title: '에오르제아 지명 메모',
+function post(p: Partial<Post> & Pick<Post, 'id' | 'section'>): Post {
+  return {
+    number: null,
+    numberLabel: '',
+    title: '',
     tabs: [],
-    section: 'story',
     characters: [],
-    summary: '자캐 설정에 자주 쓰는 지명과 표기를 모아 둔 메모.',
-    date: '2024-01-05',
-    tags: ['설정', '메모'],
-    order: 10,
-    html: '<p>표본 본문입니다.</p>',
-  },
-];
+    images: [],
+    html: '',
+    text: '',
+    ...p,
+  };
+}
 
-export const mockPosts: Post[] = raw.map((p) => ({ ...p, images: [] }));
+const LOG_SHORT = `숙소로 돌아오는 길에 눈이 내렸다.
+그레틴이 먼저 알아채고 손바닥을 펴 보였는데, 닿자마자 녹아서 아무것도 남지 않았다.
+그래도 한참을 그러고 서 있었다.`;
+
+const LOG_LONG = Array.from({ length: 16 }, (_, i) =>
+  `${i + 1}. 긴 기록의 표본 줄입니다. 열 줄이 넘어가면 카드에서는 잘리고, 눌러서 전문을 봅니다.`,
+).join('\n');
+
+export const mockPosts: Post[] = [
+  post({
+    id: 'mock-profile-1', section: 'profile', number: 1, numberLabel: '1',
+    title: '서리화', tabs: ['seorihwa'], characters: ['서리화'],
+    text: '에오르제아에 흘러들어온 빛의 전사. 말수가 적고, 기록하는 습관이 있다.',
+    html: '<p>에오르제아에 흘러들어온 빛의 전사. 말수가 적고, 기록하는 습관이 있다.</p><h3>기본</h3><ul><li>종족 · 미코테</li><li>직업 · 백마도사</li></ul>',
+  }),
+  post({
+    id: 'mock-profile-2', section: 'profile', number: 2, numberLabel: '2',
+    title: '카르네아데스', tabs: ['azem'], characters: ['카르네아데스'],
+    text: '열두 번째 자리. 어디에도 오래 머무르지 않는 여행자.',
+    html: '<p>열두 번째 자리. 어디에도 오래 머무르지 않는 여행자.</p>',
+  }),
+  post({
+    id: 'mock-profile-3', section: 'profile', number: 3, numberLabel: '3',
+    title: '야슈톨라', tabs: ['sangseogo'], characters: ['야슈톨라'],
+    text: '샤렐리안의 현자. 필요한 말만 하고, 필요할 때 반드시 온다.',
+    html: '<p>샤렐리안의 현자.</p>',
+  }),
+  post({
+    id: 'mock-story-1', section: 'story', number: 1, numberLabel: '1',
+    title: '첫눈이 내리던 쿠르잔', tabs: ['seorihwa'], date: '2024-02-11',
+    text: '서리화가 처음으로 뒤를 돌아보지 않고 걸었던 날의 기록. 눈은 저녁까지 그치지 않았다.',
+    html: '<p>서리화가 처음으로 뒤를 돌아보지 않고 걸었던 날의 기록.</p>',
+  }),
+  post({
+    id: 'mock-story-2', section: 'story', number: 2, numberLabel: '2',
+    title: '흑와단 신병 보고서', tabs: ['squadron'], date: '2024-03-30',
+    text: '소대에 배속된 첫 주, 훈련장에서 벌어진 소동에 대하여.',
+    html: '<p>소대에 배속된 첫 주, 훈련장에서 벌어진 소동.</p>',
+  }),
+  post({
+    id: 'mock-log-1', section: 'logs', number: 12, numberLabel: 'LOG-12',
+    tabs: ['squadron'], text: LOG_SHORT,
+    html: LOG_SHORT.split('\n').map((l) => `<p>${l}</p>`).join(''),
+  }),
+  post({
+    id: 'mock-log-2', section: 'logs', number: 11, numberLabel: 'LOG-11',
+    tabs: ['sangseogo'],
+    text: '차를 세 번 끓였다. 두 번은 식었고, 세 번째는 마셨다. 아무 일도 일어나지 않았다.',
+    html: '<p>차를 세 번 끓였다. 두 번은 식었고, 세 번째는 마셨다.</p><p>아무 일도 일어나지 않았다.</p>',
+  }),
+  post({
+    id: 'mock-log-3', section: 'logs', number: 10, numberLabel: 'LOG-10',
+    tabs: ['seorihwa'], text: LOG_LONG,
+    html: LOG_LONG.split('\n').map((l) => `<p>${l}</p>`).join(''),
+  }),
+  post({
+    id: 'mock-log-4', section: 'logs', number: 9, numberLabel: 'LOG-9',
+    tabs: ['lorenti'],
+    text: '노란 등불과 밤하늘이 나란히 놓였던 축제의 밤. 로레트는 끝까지 등불을 놓지 않았다.',
+    html: '<p>노란 등불과 밤하늘이 나란히 놓였던 축제의 밤.</p>',
+  }),
+];
 
 const timelineRaw: Omit<TimelineEntry, 'sortKey'>[] = [
   { id: 'tl-1', period: '-10년', characters: ['서리화'], body: '서리화, 림사 로민사 외곽에서 태어나다.', order: 0 },

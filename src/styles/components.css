@@ -25,7 +25,7 @@
   font-size: clamp(0.62rem, 1.6vw, 0.74rem);
   font-weight: 400;
   letter-spacing: 0.34em;
-  text-transform: lowercase;
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 .site-header__rule { margin-top: 1.4rem; }
@@ -44,11 +44,21 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
   gap: 0.4rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+.mainnav__item { display: flex; }
+/* 링크 안에 블록 요소(밑줄 띠)가 들어가므로 인라인이 아니라 flex 로 세웁니다.
+   인라인 박스 안의 블록은 폭 계산이 어긋나 목록 전체가 한쪽으로 쏠려 보입니다. */
+.mainnav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.mainnav__link .cut { display: block; }
 .mainnav__link .cut-face {
   padding: 0.5rem 0.95rem;
   font-size: var(--fs-sm);
@@ -173,20 +183,14 @@
   color: var(--ink);
 }
 .card:hover .card__title { color: var(--accent); }
-.card__summary {
+.card__preview {
   font-size: var(--fs-sm);
+  line-height: 1.85;
   color: var(--ink-2);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-.card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: auto;
-  padding-top: 0.7rem;
 }
 
 @keyframes card-in {
@@ -218,7 +222,23 @@
   font-size: 2.4rem;
   color: rgb(var(--dot-rgb) / 0.55);
 }
-.profile__body { padding: 1.3rem 1.5rem 1.5rem; }
+.profile__body {
+  display: flex;
+  flex-direction: column;
+  padding: 1.3rem 1.5rem 1.5rem;
+}
+.profile__preview {
+  margin-top: 0.6rem;
+  font-size: var(--fs-sm);
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+.profile__link {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
 .profile__name {
   font-size: var(--fs-h2);
   color: color-mix(in srgb, var(--dot) 80%, #1E293B);
@@ -262,6 +282,62 @@
   font-size: var(--fs-xs);
   color: var(--ink-3);
   border-top: 1px solid var(--line);
+}
+
+/* ---------- Logs: 제목 없이 본문만, 높이는 제각각 열만 맞춤 ---------- */
+.log-columns {
+  columns: 3 320px;
+  column-gap: 1rem;
+  padding-block: 1.4rem 3rem;
+}
+.log-card {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+.log-card:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 var(--bevel-hi), 0 8px 20px rgb(var(--accent-rgb) / 0.14);
+}
+.log-card__link { display: block; padding: 1.1rem 1.25rem 1.2rem; }
+.log-card__no {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  margin-bottom: 0.6rem;
+}
+
+/* 10줄까지 그대로 두고, 넘치면 잘라 냅니다. 잘렸는지는 스크립트가 표시해 줍니다. */
+.log-card__clip {
+  --lines: 10;
+  --lh: 1.85;
+  --fs: 0.95rem;
+  max-height: calc(var(--lines) * var(--lh) * var(--fs));
+  overflow: hidden;
+}
+.log-card__clip[data-clipped='true'] {
+  -webkit-mask-image: linear-gradient(180deg, #000 74%, transparent);
+  mask-image: linear-gradient(180deg, #000 74%, transparent);
+}
+.log-card__body {
+  font-size: var(--fs, 0.95rem);
+  line-height: 1.85;
+}
+.log-card__body > * + * { margin-top: 0.55rem; }
+.log-card__body h2,
+.log-card__body h3,
+.log-card__body h4 { margin-top: 0.9rem; font-size: 1rem; }
+.log-card__body figure { margin: 0.8rem 0; }
+.log-card__more {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .log-columns { columns: 1; }
 }
 
 /* ---------- 연표 ---------- */
@@ -467,3 +543,4 @@
   color: var(--accent);
 }
 .article__gallery { display: grid; gap: 0.8rem; margin-top: 2.5rem; }
+.article__image { border: 1px solid var(--line); border-radius: var(--radius); }

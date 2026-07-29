@@ -12,24 +12,26 @@ function hrefFor(id: string, kind: string) {
 ---
 
 <nav class="mainnav" aria-label="메인 카테고리">
-  <ul class="mainnav__list shell">
-    {mainTabs.map((tab) => (
-      <li>
-        <a
-          class="mainnav__link"
-          href={hrefFor(tab.id, tab.kind)}
-          aria-current={active === tab.id ? 'page' : undefined}
-          title={tab.caption}
-        >
-          <span class="cut" data-active={String(active === tab.id)}>
-            <span class="cut-face">{tab.label}</span>
-          </span>
-          <span
-            class="mainnav__seam"
-            style={`--tabA:${tab.accents[0]};--tabB:${tab.accents[1] ?? tab.accents[0]}`}
-          ></span>
-        </a>
-      </li>
-    ))}
-  </ul>
+  <div class="shell">
+    <ul class="mainnav__list">
+      {mainTabs.map((tab) => (
+        <li class="mainnav__item">
+          <a
+            class="mainnav__link"
+            href={hrefFor(tab.id, tab.kind)}
+            aria-current={active === tab.id ? 'page' : undefined}
+            title={tab.caption}
+          >
+            <span class="cut" data-active={String(active === tab.id)}>
+              <span class="cut-face">{tab.label}</span>
+            </span>
+            <span
+              class="mainnav__seam"
+              style={`--tabA:${tab.accents[0]};--tabB:${tab.accents[1] ?? tab.accents[0]}`}
+            ></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
 </nav>

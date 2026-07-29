@@ -1,5 +1,6 @@
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import type { MediaItem, Post, SectionId, TimelineEntry } from '@types';
+import type { MediaItem, Post, SourceConfig, TimelineEntry } from '@types';
+import { IMAGE_PROP, TAB_PROP, timelineSource } from '@config/sources';
 import { localizeImage } from './images';
 import { periodSortKey } from './timeline';
 
@@ -13,6 +14,7 @@ function plain(prop: Props[string] | undefined): string {
   if (prop.type === 'status') return prop.status?.name ?? '';
   if (prop.type === 'url') return prop.url ?? '';
   if (prop.type === 'date') return prop.date?.start ?? '';
+  if (prop.type === 'multi_select') return prop.multi_select.map((o) => o.name).join(', ');
   return '';
 }
 
@@ -20,24 +22,42 @@ function list(prop: Props[string] | undefined): string[] {
   if (!prop) return [];
   if (prop.type === 'multi_select') return prop.multi_select.map((o) => o.name);
   if (prop.type === 'select') return prop.select ? [prop.select.name] : [];
+  if (prop.type === 'title') {
+    const value = prop.title.map((t) => t.plain_text).join('').trim();
+    return value ? [value] : [];
+  }
+  if (prop.type === 'rich_text') {
+    const value = prop.rich_text.map((t) => t.plain_text).join('').trim();
+    return value ? [value] : [];
+  }
   return [];
 }
 
-function num(prop: Props[string] | undefined, fallback = 0): number {
-  if (prop?.type === 'number' && typeof prop.number === 'number') return prop.number;
-  return fallback;
+/**
+ * 번호를 읽습니다.
+ * 숫자 속성과 ID(고유 ID) 속성을 모두 받아들이므로,
+ * DB 마다 어느 쪽을 썼는지 신경 쓸 필요가 없습니다.
+ */
+function readNumber(prop: Props[string] | undefined): { value: number | null; label: string } {
+  if (prop?.type === 'number' && typeof prop.number === 'number') {
+    return { value: prop.number, label: String(prop.number) };
+  }
+  if (prop?.type === 'unique_id') {
+    const n = prop.unique_id.number;
+    if (typeof n !== 'number') return { value: null, label: '' };
+    const prefix = prop.unique_id.prefix;
+    return { value: n, label: prefix ? `${prefix}-${n}` : String(n) };
+  }
+  return { value: null, label: '' };
 }
 
-function bool(prop: Props[string] | undefined, fallback = true): boolean {
-  if (prop?.type === 'checkbox') return prop.checkbox;
-  return fallback;
-}
-
-async function files(prop: Props[string] | undefined): Promise<MediaItem[]> {
+async function filesOf(prop: Props[string] | undefined): Promise<MediaItem[]> {
   if (prop?.type !== 'files') return [];
   const out: MediaItem[] = [];
   for (const f of prop.files) {
-    const raw = f.type === 'external' ? f.external.url : f.file.url;
+    // 노션에 직접 올린 파일은 file.url, 링크로 붙인 건 external.url 로 옵니다.
+    // type 필드가 빠져 올 때도 있어 키 존재 여부로 판별합니다.
+    const raw = 'external' in f ? f.external.url : f.file.url;
     out.push({ src: await localizeImage(raw), alt: f.name ?? '' });
   }
   return out;
@@ -46,58 +66,52 @@ async function files(prop: Props[string] | undefined): Promise<MediaItem[]> {
 async function coverOf(page: PageObjectResponse): Promise<string | undefined> {
   const c = page.cover;
   if (!c) return undefined;
-  const raw = c.type === 'external' ? c.external.url : c.file.url;
-  return localizeImage(raw);
+  return localizeImage(c.type === 'external' ? c.external.url : c.file.url);
 }
 
-const SECTION_ALIASES: Record<string, SectionId> = {
-  profile: 'profile', 설정: 'profile', 프로필: 'profile',
-  story: 'story', 스토리: 'story', 본편: 'story',
-  logs: 'logs', log: 'logs', 로그: 'logs', 썰: 'logs',
-  screenshots: 'screenshots', screenshot: 'screenshots', 스크린샷: 'screenshots',
-  gallery: 'gallery', 갤러리: 'gallery', 그림: 'gallery',
-};
-
-function toSection(value: string): SectionId {
-  return SECTION_ALIASES[value.trim().toLowerCase()] ?? 'story';
-}
-
-/** 노션 페이지 → Post. 공개 체크가 꺼져 있으면 null 을 돌려줍니다. */
-export async function toPost(page: PageObjectResponse, tabLabelToId: Map<string, string>): Promise<Post | null> {
+/**
+ * 노션 페이지 하나를 Post 로 바꿉니다.
+ * 본문(HTML · 평문 · 본문 이미지)은 content.ts 에서 채워 넣습니다.
+ */
+export async function toPost(
+  page: PageObjectResponse,
+  source: SourceConfig,
+  tabLabelToId: Map<string, string>,
+): Promise<Post> {
   const p = page.properties;
-  if (!bool(p['공개'], true)) return null;
+  const { value, label } = readNumber(p[source.numberProp]);
 
-  const tabLabels = list(p['탭']);
-  const tabs = tabLabels
-    .map((label) => tabLabelToId.get(label.trim()))
+  const tabs = list(p[TAB_PROP])
+    .map((name) => tabLabelToId.get(name.trim()))
     .filter((v): v is string => Boolean(v));
 
   return {
     id: page.id.replace(/-/g, ''),
-    title: plain(p['제목']) || '제목 없음',
+    section: source.section,
+    number: value,
+    numberLabel: label,
+    title: source.titleProp ? plain(p[source.titleProp]) : '',
     tabs,
-    section: toSection(plain(p['카테고리'])),
-    characters: list(p['관련 캐릭터']),
-    summary: plain(p['요약']),
-    date: plain(p['날짜']) || undefined,
-    tags: list(p['태그']),
+    characters: source.characterProp ? list(p[source.characterProp]) : [],
+    date: (source.dateProp ? plain(p[source.dateProp]) : '') || undefined,
     cover: await coverOf(page),
-    images: await files(p['이미지']),
-    order: num(p['정렬'], 0),
+    images: await filesOf(p[IMAGE_PROP]),
     html: '',
+    text: '',
   };
 }
 
-/** 노션 페이지 → 연표 항목. [ 시기 / 관련 캐릭터 / 내용 ] 3필드만 씁니다. */
+/** 노션 페이지 → 연표 항목. [ 시기 / 관련 캐릭터 / 내용 ] 만 씁니다. */
 export function toTimelineEntry(page: PageObjectResponse): TimelineEntry {
   const p = page.properties;
-  const period = (plain(p['시기']) || '신생').trim();
+  const period = (plain(p[timelineSource.periodProp]) || '신생').trim();
+  const order = p[timelineSource.orderProp];
   return {
     id: page.id.replace(/-/g, ''),
     period,
-    characters: list(p['관련 캐릭터']),
-    body: plain(p['내용']),
+    characters: list(p[timelineSource.characterProp]),
+    body: plain(p[timelineSource.bodyProp]),
     sortKey: periodSortKey(period),
-    order: num(p['순서'], 0),
+    order: order?.type === 'number' && typeof order.number === 'number' ? order.number : 0,
   };
 }
