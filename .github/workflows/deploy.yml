@@ -28,6 +28,33 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+
+      # 시크릿을 하나라도 빠뜨리면 빌드는 성공하지만 샘플 데이터가 배포됩니다.
+      # 여기서 먼저 걸러 어느 이름이 비었는지 알려 줍니다.
+      - name: Check secrets
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PROFILE_DB: ${{ secrets.NOTION_PROFILE_DB }}
+          NOTION_STORY_DB: ${{ secrets.NOTION_STORY_DB }}
+          NOTION_LOGS_DB: ${{ secrets.NOTION_LOGS_DB }}
+          NOTION_SCREENSHOTS_DB: ${{ secrets.NOTION_SCREENSHOTS_DB }}
+          NOTION_GALLERY_DB: ${{ secrets.NOTION_GALLERY_DB }}
+          NOTION_TIMELINE_DB: ${{ secrets.NOTION_TIMELINE_DB }}
+        run: |
+          missing=()
+          for name in NOTION_TOKEN NOTION_PROFILE_DB NOTION_STORY_DB \
+                      NOTION_LOGS_DB NOTION_SCREENSHOTS_DB NOTION_GALLERY_DB \
+                      NOTION_TIMELINE_DB; do
+            [ -z "${!name}" ] && missing+=("$name")
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::등록되지 않은 시크릿: ${missing[*]}"
+            echo "Settings → Secrets and variables → Actions 에서 추가하세요."
+            echo "아직 안 만든 DB 라면 그 이름만 빼고 아래 build 단계에서도 지우면 됩니다."
+            exit 1
+          fi
+          echo "시크릿 7개 모두 확인했습니다."
+
       - name: Build with Notion content
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}

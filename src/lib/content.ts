@@ -14,6 +14,11 @@ import { mockPosts, mockTimeline } from './mock';
 
 const tabLabelToId = new Map(mainTabs.map((t) => [t.label, t.id]));
 
+/** CI 에서는 자격 증명 누락을 경고가 아니라 실패로 다룹니다. */
+function isStrict(): boolean {
+  return process.env.CI === 'true' && process.env.ALLOW_SAMPLE_CONTENT !== 'true';
+}
+
 let postsPromise: Promise<Post[]> | null = null;
 let timelinePromise: Promise<TimelineEntry[]> | null = null;
 
@@ -21,6 +26,15 @@ async function loadPosts(): Promise<Post[]> {
   const configured = sources.filter((s) => dbId(s.env));
 
   if (!hasToken || configured.length === 0) {
+    // 시크릿 이름을 하나 잘못 적어도 빌드는 성공하기 때문에,
+    // 샘플 데이터가 실제 사이트로 배포돼 버리는 사고가 납니다. CI 에서는 아예 멈춥니다.
+    if (isStrict()) {
+      throw new Error(
+        '노션 자격 증명을 찾지 못했습니다. 저장소 Settings → Secrets and variables → Actions 에 ' +
+          'NOTION_TOKEN 과 각 DB ID 가 등록돼 있는지, 이름 철자가 맞는지 확인하세요. ' +
+          '샘플 데이터로 배포하려면 ALLOW_SAMPLE_CONTENT=true 를 주면 됩니다.',
+      );
+    }
     console.warn('[content] 노션 설정이 없어 샘플 데이터로 렌더링합니다.');
     return mockPosts;
   }

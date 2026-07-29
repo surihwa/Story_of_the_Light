@@ -152,9 +152,11 @@ src/
    - 프로젝트 페이지: `site: 'https://아이디.github.io'`, `base: '/저장소이름'`
    - 유저 페이지(`아이디.github.io` 저장소): `base: '/'`
 2. 저장소 **Settings → Pages → Source**를 `GitHub Actions`로 바꿉니다.
-3. **Settings → Secrets and variables → Actions**에 등록합니다.
+3. **Settings → Secrets and variables → Actions**에 일곱 개를 등록합니다.
    `NOTION_TOKEN` · `NOTION_PROFILE_DB` · `NOTION_STORY_DB` · `NOTION_LOGS_DB` · `NOTION_SCREENSHOTS_DB` · `NOTION_GALLERY_DB` · `NOTION_TIMELINE_DB`
 4. `main`에 푸시하면 배포됩니다.
+
+토큰과 DB ID는 코드에 넣지 않습니다. 내 컴퓨터에서는 `.gitignore`된 `.env`가, 깃허브에서는 저장소 Secrets가 값을 공급하고, 빌드 결과물에는 남지 않습니다. 시크릿을 빠뜨린 채 배포되는 것을 막기 위해 워크플로의 `Check secrets` 단계와 빌드 코드가 이중으로 검사합니다. 자세한 절차는 [docs/NOTION_SETUP.md](docs/NOTION_SETUP.md#6-깃허브에-올릴-때--토큰은-코드에-넣지-않습니다)에 있습니다.
 
 노션 내용만 바꿨을 때는 **Actions 탭 → Deploy to GitHub Pages → Run workflow**로 다시 빌드하세요. 매일 새벽 4시(KST) 자동 재빌드도 걸려 있습니다. 필요 없으면 `schedule` 블록을 지우면 됩니다.
 

@@ -110,6 +110,51 @@ npm run build
 
 아직 안 만든 DB는 비워 두면 됩니다. 그 카테고리만 빈 화면으로 나오고 나머지는 정상 동작합니다.
 
+## 6. 깃허브에 올릴 때 — 토큰은 코드에 넣지 않습니다
+
+토큰과 DB ID는 저장소에 **절대 들어가지 않습니다.** 두 곳에 나눠 둡니다.
+
+| | 어디에 | 커밋되나 |
+|---|---|---|
+| 내 컴퓨터 | `.env` | 아니요 (`.gitignore`에 있음) |
+| 깃허브 액션 | 저장소 Secrets | 아니요 (암호화 저장, 로그에도 `***`로 가려짐) |
+
+`.env.example`은 변수 **이름만** 적힌 빈 껍데기라 커밋해도 됩니다.
+
+### 시크릿 등록하기
+
+저장소 → **Settings** → 왼쪽 **Secrets and variables** → **Actions** → **New repository secret**
+
+일곱 개를 하나씩 추가합니다. 이름은 아래와 정확히 같아야 합니다.
+
+| Name | Secret |
+|---|---|
+| `NOTION_TOKEN` | `secret_` 으로 시작하는 통합 시크릿 |
+| `NOTION_PROFILE_DB` | Profile DB의 32자리 ID |
+| `NOTION_STORY_DB` | Story DB ID |
+| `NOTION_LOGS_DB` | Logs DB ID |
+| `NOTION_SCREENSHOTS_DB` | Screenshots DB ID |
+| `NOTION_GALLERY_DB` | Gallery DB ID |
+| `NOTION_TIMELINE_DB` | 연표 DB ID |
+
+등록한 값은 나중에 다시 열어 볼 수 없습니다. 바꿀 수만 있으니, 노션 통합 페이지에서 언제든 다시 복사할 수 있다는 점만 기억하면 됩니다.
+
+### 빠뜨렸을 때
+
+시크릿 이름을 하나라도 잘못 적으면 **빌드는 성공하는데 샘플 데이터가 배포되는** 사고가 납니다. 그래서 두 겹으로 막아 뒀습니다.
+
+- 워크플로의 **Check secrets** 단계가 비어 있는 이름을 찾아 즉시 실패시킵니다.
+- 그걸 통과하더라도, 빌드 코드가 CI에서 자격 증명을 못 찾으면 에러를 던집니다.
+
+일부러 샘플 데이터로 배포해 보고 싶다면 build 단계에 `ALLOW_SAMPLE_CONTENT: 'true'`를 추가하면 됩니다.
+
+아직 안 만든 DB가 있다면, 그 시크릿 이름을 `Check secrets` 단계의 목록과 `build` 단계의 `env`에서 지우면 그 카테고리만 빈 화면으로 나오고 나머지는 정상 배포됩니다.
+
+### 실수로 토큰을 커밋했다면
+
+깃 히스토리에서 지우는 것보다 **노션에서 토큰을 폐기하고 새로 발급하는 편이 확실합니다.**
+<https://www.notion.so/my-integrations> → 해당 통합 → Secrets → **Refresh**. 새 값을 시크릿에 다시 넣으면 끝입니다.
+
 ---
 
 ## 잘 안 될 때
