@@ -1,0 +1,26 @@
+---
+import type { MainTab, Post } from '@types';
+import { url } from '@lib/url';
+
+interface Props { posts: Post[]; tab: MainTab }
+const { posts } = Astro.props;
+
+/** 게시물 하나에 여러 장이 붙어 있어도 전부 펼쳐서 한 그리드에 보여 줍니다. */
+const items = posts.flatMap((post) => {
+  const media = post.images.length > 0
+    ? post.images
+    : post.cover ? [{ src: post.cover, alt: post.title }] : [];
+  return media.map((image) => ({ ...image, postId: post.id, caption: post.title }));
+});
+---
+
+<div class="media">
+  {items.map((item) => (
+    <figure class="media__item">
+      <a href={url(`post/${item.postId}`)}>
+        <img src={item.src} alt={item.alt || item.caption} loading="lazy" />
+      </a>
+      <figcaption class="media__cap">{item.caption}</figcaption>
+    </figure>
+  ))}
+</div>

@@ -1,0 +1,60 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import CharacterBadge from '@components/CharacterBadge.astro';
+import { getPosts } from '@lib/content';
+import { getTab, getSubTab, mainTabs } from '@config/tabs';
+import { url } from '@lib/url';
+import type { Post } from '@types';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+};
+
+const { post } = Astro.props as { post: Post };
+
+/** 어느 탭에서 왔는지 알 수 없으므로, 이 글이 속한 첫 탭 색을 씁니다. */
+const homeTab = getTab(post.tabs[0] ?? '') ?? mainTabs.find((t) => t.kind === 'world')!;
+const sub = getSubTab(post.section)!;
+---
+
+<BaseLayout title={post.title} activeTab={homeTab.id}>
+  <article class="article">
+    <header class="article__head">
+      <p class="eyebrow">{homeTab.label} · {sub.label}</p>
+      <h1 class="article__title">{post.title}</h1>
+      {post.summary && <p style="margin-top:.8rem;color:var(--ink-2)">{post.summary}</p>}
+      <div class="article__meta">
+        {post.date && <time class="chip" datetime={post.date}>{post.date}</time>}
+        {post.characters.map((name) => <CharacterBadge name={name} />)}
+        {post.tags.map((tag) => <span class="chip">{tag}</span>)}
+      </div>
+    </header>
+
+    {post.cover && (
+      <img
+        src={post.cover}
+        alt=""
+        style="margin-top:2rem;border:1px solid var(--line);border-radius:var(--radius)"
+      />
+    )}
+
+    <div class="article__body prose" set:html={post.html} />
+
+    {post.images.length > 0 && (
+      <div class="article__gallery">
+        {post.images.map((image) => (
+          <img
+            src={image.src}
+            alt={image.alt}
+            loading="lazy"
+            style="border:1px solid var(--line);border-radius:var(--radius)"
+          />
+        ))}
+      </div>
+    )}
+
+    <a class="article__back" href={url(`${homeTab.id}/${post.section}`)}>← {homeTab.label} · {sub.label} 로 돌아가기</a>
+  </article>
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import { mainTabs } from '@config/tabs';
+import { url } from '@lib/url';
+
+interface Props { active?: string }
+const { active } = Astro.props;
+
+/** 연표는 서브 탭이 없으므로 바로 /timeline/ 으로, 나머지는 첫 서브 탭으로 보냅니다. */
+function hrefFor(id: string, kind: string) {
+  return kind === 'timeline' ? url('timeline') : url(`${id}/profile`);
+}
+---
+
+<nav class="mainnav" aria-label="메인 카테고리">
+  <ul class="mainnav__list shell">
+    {mainTabs.map((tab) => (
+      <li>
+        <a
+          class="mainnav__link"
+          href={hrefFor(tab.id, tab.kind)}
+          aria-current={active === tab.id ? 'page' : undefined}
+          title={tab.caption}
+        >
+          <span class="cut" data-active={String(active === tab.id)}>
+            <span class="cut-face">{tab.label}</span>
+          </span>
+          <span
+            class="mainnav__seam"
+            style={`--tabA:${tab.accents[0]};--tabB:${tab.accents[1] ?? tab.accents[0]}`}
+          ></span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

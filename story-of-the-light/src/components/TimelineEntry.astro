@@ -1,0 +1,30 @@
+---
+import type { TimelineEntry } from '@types';
+import { colorOf } from '@config/characters';
+import CharacterBadge from './CharacterBadge.astro';
+
+interface Props { entry: TimelineEntry }
+const { entry } = Astro.props;
+
+const colors = entry.characters.map(colorOf);
+/** 관련 캐릭터가 여럿이면 마름모를 색깔 수만큼 잘라 칠합니다. */
+const fill =
+  colors.length === 0
+    ? 'var(--ink-3)'
+    : colors.length === 1
+      ? colors[0]
+      : `linear-gradient(90deg, ${colors
+          .map((c, i) => `${c} ${(i / colors.length) * 100}% ${((i + 1) / colors.length) * 100}%`)
+          .join(', ')})`;
+const edge = colors[0] ?? 'var(--line-strong)';
+---
+
+<article class="tl-entry panel" style={`border-left:3px solid ${edge}`}>
+  <span class="tl-entry__node" style={`--node-fill:${fill}`} aria-hidden="true"></span>
+  <p class="tl-entry__body">{entry.body}</p>
+  {entry.characters.length > 0 && (
+    <p class="tl-entry__chars">
+      {entry.characters.map((name) => <CharacterBadge name={name} />)}
+    </p>
+  )}
+</article>

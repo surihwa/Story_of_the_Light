@@ -1,0 +1,16 @@
+---
+import { site } from '@config/site';
+import { url } from '@lib/url';
+
+const [lead, ...rest] = site.title.split(' ');
+---
+
+<header class="site-header shell">
+  <a href={url()} aria-label={`${site.title} 홈으로`}>
+    <h1 class="site-header__title">
+      <span class="lead">{lead}</span> {rest.join(' ')}
+    </h1>
+  </a>
+  <p class="site-header__sub">{site.subtitle}</p>
+  <div class="rule site-header__rule" aria-hidden="true"><span class="lozenge"></span></div>
+</header>

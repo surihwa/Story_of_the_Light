@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Timeline from '@components/Timeline.astro';
+import { getTimeline } from '@lib/content';
+import { characterList } from '@config/characters';
+import { colorVars } from '@lib/theme';
+
+const entries = await getTimeline();
+---
+
+<BaseLayout title="연표" activeTab="timeline">
+  <header class="page-head">
+    <h1 class="page-head__title">연표</h1>
+    <p class="page-head__caption">신생을 0년으로 둔 전체 시간축</p>
+    <p class="page-head__count">{entries.length} entries</p>
+  </header>
+
+  <p style="max-width:52ch;color:var(--ink-2);padding-bottom:.5rem">
+    신생 이전은 연도 숫자로, 이후는 확장팩 이름으로 구간을 나눴습니다.
+    각 항목 왼쪽의 마름모 색이 관련 캐릭터를 가리킵니다.
+  </p>
+
+  <ul style="display:flex;flex-wrap:wrap;gap:.4rem;list-style:none;padding:0;margin:.8rem 0 0">
+    {characterList.map((character) => (
+      <li class="badge" style={colorVars(character.color)}>{character.name}</li>
+    ))}
+  </ul>
+
+  <Timeline entries={entries} />
+</BaseLayout>

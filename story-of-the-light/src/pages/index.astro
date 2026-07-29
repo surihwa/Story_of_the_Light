@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { mainTabs } from '@config/tabs';
+import { url } from '@lib/url';
+import { getPosts, getTimeline } from '@lib/content';
+
+const posts = await getPosts();
+const timeline = await getTimeline();
+
+function hrefFor(id: string, kind: string) {
+  return kind === 'timeline' ? url('timeline') : url(`${id}/profile`);
+}
+---
+
+<BaseLayout>
+  <section class="page-head">
+    <p class="eyebrow">Archive index</p>
+  </section>
+
+  <p style="max-width:46ch;color:var(--ink-2)">
+    자캐와 페어, 소대의 설정과 이야기를 한자리에 모아 두었습니다.
+    보고 싶은 인물을 고르거나, 연표에서 시간 순서대로 따라가 보세요.
+  </p>
+
+  <div class="home-grid">
+    {mainTabs.map((tab) => (
+      <a
+        class={`home-tile panel ${tab.kind === 'dual' ? 'home-tile--dual' : ''}`}
+        href={hrefFor(tab.id, tab.kind)}
+        style={`--tile:${tab.accents[0]};--tile2:${tab.accents[1] ?? tab.accents[0]}`}
+      >
+        <h2 class="home-tile__name">{tab.label}</h2>
+        <p class="home-tile__caption">{tab.caption}</p>
+      </a>
+    ))}
+  </div>
+
+  <p class="eyebrow" style="padding-bottom:2rem">
+    기록 {posts.length}건 · 연표 {timeline.length}항목
+  </p>
+</BaseLayout>

@@ -1,0 +1,159 @@
+/* =========================================================
+   글로벌 토큰 · 리셋 · 타이포그래피
+   ========================================================= */
+
+:root {
+  /* --- 지면 --- */
+  --paper: #F1F5F9;
+  --paper-2: #F8FAFC;
+  --card: #FBFCFE;
+  --ink: #1E293B;
+  --ink-2: #4A5A70;
+  --ink-3: #8496AB;
+
+  /* --- 선과 양각 (FF14 UI 의 얇은 금선과 엠보스) --- */
+  --line: #DCE3EB;
+  --line-strong: #C3CEDA;
+  --gilt: #C6A96B;
+  --bevel-hi: rgba(255, 255, 255, 0.95);
+  --bevel-lo: rgba(15, 23, 42, 0.08);
+
+  /* --- 강조색: 탭이 바뀌면 인라인으로 덮어씁니다 --- */
+  --accent: #2F234F;
+  --accent-rgb: 47 35 79;
+  --accent-2: #2F234F;
+  --accent-2-rgb: 47 35 79;
+  --accent-ink: #FFFFFF;
+
+  /* --- 서체 --- */
+  --font-display: 'Marcellus', 'Noto Serif KR', Georgia, serif;
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font-serif: 'Noto Serif KR', 'Marcellus', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* --- 타입 스케일 --- */
+  --fs-hero: clamp(2.3rem, 7vw, 4rem);
+  --fs-h1: clamp(1.5rem, 3.4vw, 2.05rem);
+  --fs-h2: clamp(1.15rem, 2.2vw, 1.4rem);
+  --fs-body: 0.975rem;
+  --fs-sm: 0.85rem;
+  --fs-xs: 0.72rem;
+
+  /* --- 리듬 --- */
+  --gutter: clamp(1.1rem, 4vw, 2.5rem);
+  --shell: 1140px;
+  --radius: 3px;
+  --chamfer: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  --chamfer-in: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.75;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(120% 60% at 50% -10%, rgb(var(--accent-rgb) / 0.07), transparent 62%),
+    linear-gradient(180deg, var(--paper-2), var(--paper) 340px);
+  background-attachment: fixed;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(a, button, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+p { margin: 0; }
+
+/* --- 레이아웃 프리미티브 --- */
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.stack > * + * { margin-top: var(--stack-gap, 1rem); }
+
+/* --- 반복해서 쓰는 작은 조판 --- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--gilt);
+}
+.rule::before,
+.rule::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+.rule .lozenge {
+  width: 7px;
+  height: 7px;
+  rotate: 45deg;
+  background: var(--accent);
+  transition: background-color 0.4s ease;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

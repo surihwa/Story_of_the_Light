@@ -1,0 +1,24 @@
+---
+import { subTabs } from '@config/tabs';
+import { url } from '@lib/url';
+
+interface Props { tabId: string; active: string }
+const { tabId, active } = Astro.props;
+---
+
+<nav aria-label="세부 카테고리">
+  <ul class="subnav">
+    {subTabs.map((sub) => (
+      <li>
+        <a
+          class="subnav__link"
+          href={url(`${tabId}/${sub.id}`)}
+          aria-current={active === sub.id ? 'page' : undefined}
+        >
+          {sub.label}
+          <span class="subnav__ko">{sub.caption}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

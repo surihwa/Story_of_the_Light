@@ -1,0 +1,28 @@
+---
+import type { TimelineEntry as Entry } from '@types';
+import { groupByPeriod } from '@lib/timeline';
+import TimelineEntry from './TimelineEntry.astro';
+import EmptyState from './EmptyState.astro';
+
+interface Props { entries: Entry[] }
+const groups = groupByPeriod(Astro.props.entries);
+---
+
+<div class="timeline">
+  {groups.length === 0 ? (
+    <EmptyState
+      title="연표가 비어 있습니다"
+      hint="연표 DB 에 [ 시기 / 관련 캐릭터 / 내용 ] 을 채우면 여기에 순서대로 쌓입니다."
+    />
+  ) : (
+    groups.map((group) => (
+      <section class="tl-group">
+        <header class="tl-era">
+          <h2 class="tl-era__label">{group.period}</h2>
+          {group.caption && <p class="tl-era__caption">{group.caption}</p>}
+        </header>
+        {group.entries.map((entry) => <TimelineEntry entry={entry} />)}
+      </section>
+    ))
+  )}
+</div>

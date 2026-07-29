@@ -1,0 +1,13 @@
+---
+interface Props { title?: string; hint?: string }
+const {
+  title = '아직 올린 글이 없습니다',
+  hint = '노션 DB 에 이 분류로 글을 추가하면 다음 빌드에서 여기에 나타납니다.',
+} = Astro.props;
+---
+
+<div class="empty panel">
+  <p class="empty__mark" aria-hidden="true">◆</p>
+  <p class="empty__title">{title}</p>
+  <p class="empty__hint">{hint}</p>
+</div>

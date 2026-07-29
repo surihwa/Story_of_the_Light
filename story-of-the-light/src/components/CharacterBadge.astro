@@ -1,0 +1,11 @@
+---
+import { getCharacter } from '@config/characters';
+import { colorVars } from '@lib/theme';
+
+interface Props { name: string }
+const { name } = Astro.props;
+const character = getCharacter(name);
+const color = character?.color ?? '#94A3B8';
+---
+
+<span class="badge" style={colorVars(color)}>{character?.name ?? name}</span>
