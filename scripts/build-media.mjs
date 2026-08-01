@@ -16,11 +16,17 @@ const SRC = path.resolve('media');
 const OUT = path.resolve('public/media');
 const MANIFEST = path.resolve('src/generated/media.json');
 
-/** 카드용 / 확대창용 두 가지만 만듭니다. */
+/**
+ * 카드용 둘과 확대창용 하나.
+ *
+ * 카드는 정사각형으로 잘라 보여 주므로 만들 때부터 잘라 둡니다.
+ * 세로로 아주 긴 그림을 폭만 맞춰 저장하면 화면에 보이지도 않는 부분까지
+ * 파일에 담겨 용량만 커집니다.
+ */
 const SIZES = [
-  { key: 'sm', width: 400, quality: 76 },
-  { key: 'md', width: 800, quality: 78 },
-  { key: 'lg', width: 1600, quality: 82 },
+  { key: 'sm', width: 400, quality: 76, square: true },
+  { key: 'md', width: 800, quality: 78, square: true },
+  { key: 'lg', width: 1600, quality: 82, square: false },
 ];
 
 const EXT = /\.(jpe?g|png|gif|webp|avif)$/i;
@@ -84,8 +90,14 @@ async function main() {
 
         if (await exists(dest)) skipped++;
         else {
-          await sharp(buffer).resize({ width, withoutEnlargement: true })
-            .webp({ quality: size.quality }).toFile(dest);
+          const pipeline = sharp(buffer);
+          if (size.square) {
+            // 가운데를 기준으로 정사각형으로 잘라 냅니다.
+            pipeline.resize({ width, height: width, fit: 'cover', position: 'centre', withoutEnlargement: true });
+          } else {
+            pipeline.resize({ width, withoutEnlargement: true });
+          }
+          await pipeline.webp({ quality: size.quality }).toFile(dest);
           created++;
         }
         variants[size.key] = { src: `media/${section}/${name}`, width };

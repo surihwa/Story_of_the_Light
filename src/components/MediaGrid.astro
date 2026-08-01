@@ -23,10 +23,10 @@ const { entries } = Astro.props;
         <img
           src={entry.variants.md.src}
           srcset={`${entry.variants.sm.src} ${entry.variants.sm.width}w, ${entry.variants.md.src} ${entry.variants.md.width}w`}
-          sizes="(max-width: 640px) 100vw, 320px"
+          sizes="(max-width: 560px) 50vw, (max-width: 900px) 33vw, 360px"
           alt={entry.caption}
-          width={entry.width ?? undefined}
-          height={entry.height ?? undefined}
+          width={entry.variants.md.width}
+          height={entry.variants.md.width}
           loading="lazy"
           decoding="async"
         />

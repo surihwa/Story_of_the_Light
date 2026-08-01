@@ -61,7 +61,7 @@ const isAllProfiles = tab.kind === 'world' && section === 'profile';
       {posts.map((post) => <ProfileCard post={post} />)}
     </div>
   ) : section === 'logs' ? (
-    <div class="log-columns">
+    <div class="log-list">
       {posts.map((post) => <LogCard post={post} tab={tab} />)}
     </div>
   ) : (
