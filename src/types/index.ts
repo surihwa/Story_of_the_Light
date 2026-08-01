@@ -10,9 +10,18 @@ export interface Character {
 
 export type TabKind = 'single' | 'dual' | 'group' | 'world' | 'timeline';
 
+/** 대분류 (OC / Pair / World) */
+export interface TabGroup {
+  id: string;
+  label: string;
+}
+
+/** 중분류 */
 export interface MainTab {
   /** URL 슬러그 */
   id: string;
+  /** 소속 대분류 id */
+  group: string;
   /** 화면에 그대로 노출되는 이름 */
   label: string;
   caption: string;

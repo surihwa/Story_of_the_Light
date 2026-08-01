@@ -2,7 +2,7 @@
 import type { Post } from '@types';
 import { getCharacter } from '@config/characters';
 import { excerpt } from '@lib/blocks';
-import { colorVars } from '@lib/theme';
+import { colorVars, readableInk } from '@lib/theme';
 import { url } from '@lib/url';
 
 interface Props { post: Post }
@@ -24,7 +24,7 @@ const preview = excerpt(post.text, 150);
     <h2 class="profile__name">{character?.name ?? name}</h2>
     {preview && <p class="profile__preview">{preview}</p>}
     <p class="profile__link">
-      <a href={url(`post/${post.id}`)} style={`color:${color}`}>자세히 보기 →</a>
+      <a href={url(`post/${post.id}`)} style={`color:${readableInk(color)}`}>자세히 보기 →</a>
     </p>
   </div>
 </article>

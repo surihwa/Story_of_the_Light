@@ -1,20 +1,56 @@
 ---
-import { mainTabs } from '@config/tabs';
+import { groups, mainTabs, tabsOf } from '@config/tabs';
 import { url } from '@lib/url';
 
-interface Props { active?: string }
+interface Props {
+  /** 현재 중분류 id */
+  active?: string;
+}
 const { active } = Astro.props;
 
-/** 연표는 서브 탭이 없으므로 바로 /timeline/ 으로, 나머지는 첫 서브 탭으로 보냅니다. */
+const activeTab = mainTabs.find((t) => t.id === active);
+const activeGroup = activeTab?.group;
+
+/** 연표는 소분류가 없으므로 바로 /timeline/ 으로, 나머지는 첫 소분류로 보냅니다. */
 function hrefFor(id: string, kind: string) {
   return kind === 'timeline' ? url('timeline') : url(`${id}/profile`);
 }
+
+/** 대분류 링크는 그 안의 첫 중분류로 보냅니다. */
+function groupHref(groupId: string) {
+  const first = tabsOf(groupId)[0];
+  return first ? hrefFor(first.id, first.kind) : url();
+}
+
+/** 대분류 이름표에 쓸 색 — 그 안의 중분류 색을 이어 붙인 띠 */
+function groupSeam(groupId: string) {
+  const colors = tabsOf(groupId).map((t) => t.accents[0]);
+  const step = 100 / colors.length;
+  return colors.map((c, i) => `${c} ${i * step}% ${(i + 1) * step}%`).join(', ');
+}
 ---
 
-<nav class="mainnav" aria-label="메인 카테고리">
+<nav class="mainnav" aria-label="카테고리">
   <div class="shell">
+    {/* 1단계 — 대분류 */}
+    <ul class="groupnav">
+      {groups.map((group) => (
+        <li class="groupnav__item">
+          <a
+            class="groupnav__link"
+            href={groupHref(group.id)}
+            aria-current={activeGroup === group.id ? 'true' : undefined}
+            style={`--seam:linear-gradient(90deg, ${groupSeam(group.id)})`}
+          >
+            {group.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {/* 2단계 — 현재 대분류에 속한 중분류. 대분류를 고르기 전에는 전체를 보여 줍니다. */}
     <ul class="mainnav__list">
-      {mainTabs.map((tab) => (
+      {(activeGroup ? tabsOf(activeGroup) : mainTabs).map((tab) => (
         <li class="mainnav__item">
           <a
             class="mainnav__link"

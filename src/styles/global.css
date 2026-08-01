@@ -19,10 +19,12 @@
   --bevel-lo: rgba(15, 23, 42, 0.08);
 
   /* --- 강조색: 탭이 바뀌면 인라인으로 덮어씁니다 --- */
-  --accent: #2F234F;
-  --accent-rgb: 47 35 79;
-  --accent-2: #2F234F;
-  --accent-2-rgb: 47 35 79;
+  --accent: #342151;
+  --accent-rgb: 52 33 81;
+  --accent-text: #342151;
+  --accent-2: #342151;
+  --accent-2-rgb: 52 33 81;
+  --accent-2-text: #342151;
   --accent-ink: #FFFFFF;
 
   /* --- 서체 --- */

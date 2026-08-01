@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { mainTabs } from '@config/tabs';
+import { groups, tabsOf } from '@config/tabs';
 import { url } from '@lib/url';
+import { readableInk } from '@lib/theme';
 
 function hrefFor(id: string, kind: string) {
   return kind === 'timeline' ? url('timeline') : url(`${id}/profile`);
@@ -9,16 +10,21 @@ function hrefFor(id: string, kind: string) {
 ---
 
 <BaseLayout>
-  <div class="home-grid">
-    {mainTabs.map((tab) => (
-      <a
-        class={`home-tile panel ${tab.kind === 'dual' ? 'home-tile--dual' : ''}`}
-        href={hrefFor(tab.id, tab.kind)}
-        style={`--tile:${tab.accents[0]};--tile2:${tab.accents[1] ?? tab.accents[0]}`}
-      >
-        <h2 class="home-tile__name">{tab.label}</h2>
-        <p class="home-tile__caption">{tab.caption}</p>
-      </a>
-    ))}
-  </div>
+  {groups.map((group) => (
+    <section class="home-section">
+      <h2 class="home-section__label">{group.label}</h2>
+      <div class="home-grid">
+        {tabsOf(group.id).map((tab) => (
+          <a
+            class={`home-tile panel ${tab.kind === 'dual' ? 'home-tile--dual' : ''}`}
+            href={hrefFor(tab.id, tab.kind)}
+            style={`--tile:${tab.accents[0]};--tile2:${tab.accents[1] ?? tab.accents[0]};--tile-text:${readableInk(tab.accents[0])}`}
+          >
+            <h3 class="home-tile__name">{tab.label}</h3>
+            <p class="home-tile__caption">{tab.caption}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
 </BaseLayout>

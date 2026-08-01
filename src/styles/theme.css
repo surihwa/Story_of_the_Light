@@ -33,7 +33,7 @@
 .cut[data-active='true'] { background: var(--accent); }
 .cut[data-active='true'] > .cut-face {
   background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.13), rgb(var(--accent-rgb) / 0.06));
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* 페어 탭에서 좌우 강조색을 나눠 갖는 카드 */
@@ -54,7 +54,7 @@
   font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: color-mix(in srgb, var(--dot) 78%, #1E293B);
+  color: var(--dot-text);
   background: rgb(var(--dot-rgb) / 0.09);
   border: 1px solid rgb(var(--dot-rgb) / 0.28);
   border-radius: 999px;

@@ -2,58 +2,18 @@ import type { Character } from '@types';
 
 /**
  * 캐릭터 마스터 데이터.
- * key 는 노션 DB 의 "관련 캐릭터" multi-select 옵션 이름과 반드시 일치해야 합니다.
+ * key 는 노션의 `캐릭터` / `관련 캐릭터` 옵션 이름과 반드시 일치해야 합니다.
+ * 여기에 없는 이름은 배지가 회색으로 대체됩니다.
  */
 export const characters = {
-  '서리화': {
-    id: 'seorihwa',
-    name: '서리화',
-    role: '빛의 전사',
-    color: '#2F234F',
-    note: '남색 기운의 짙은 보라',
-  },
-  '야슈톨라': {
-    id: 'yshtola',
-    name: '야슈톨라',
-    role: '현자',
-    color: '#6A1B9A',
-    note: 'Purple',
-  },
-  '카르네아데스': {
-    id: 'carneades',
-    name: '카르네아데스',
-    role: '아젬',
-    color: '#E65C00',
-    note: '선명한 주황색',
-  },
-  '로레트': {
-    id: 'lorette',
-    name: '로레트',
-    role: '',
-    color: '#F5C518',
-    note: '샛노란 꾀꼬리색',
-  },
-  '이스노티': {
-    id: 'isnoti',
-    name: '이스노티',
-    role: '',
-    color: '#1B263B',
-    note: '밤하늘 남색',
-  },
-  '그레틴': {
-    id: 'gretin',
-    name: '그레틴',
-    role: '모험가 소대원',
-    color: '#E6B800',
-    note: 'Gold',
-  },
-  '모험가 소대': {
-    id: 'squadron',
-    name: '모험가 소대',
-    role: '흑와단',
-    color: '#8B0000',
-    note: '흑와단 상징 진한 붉은색',
-  },
+  '서리화': { id: 'surihwa', name: '서리화', role: '빛의 전사', color: '#342151' },
+  '카르네아데스': { id: 'azem', name: '카르네아데스', role: '아젬', color: '#ff9302' },
+  '로레트': { id: 'laurette', name: '로레트', role: '음유시인', color: '#fae04f' },
+  '이스노티': { id: 'isnotti', name: '이스노티', role: '암흑기사', color: '#0f163a' },
+  '야슈톨라': { id: 'yshtola', name: '야슈톨라', role: '현자', color: '#6e14b8' },
+  '그레틴': { id: 'gretin', name: '그레틴', role: '모험가 소대원', color: '#E6B800' },
+  '신학원': { id: 'scholasticate', name: '신학원', role: '성 앙달림 신학원', color: '#b9d9ec' },
+  '흑와단': { id: 'maelstrom', name: '흑와단', role: '모험가 소대', color: '#af1919' },
 } satisfies Record<string, Character>;
 
 export type CharacterKey = keyof typeof characters;

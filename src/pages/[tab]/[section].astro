@@ -7,7 +7,7 @@ import LogCard from '@components/LogCard.astro';
 import ProfileCard from '@components/ProfileCard.astro';
 import MediaGrid from '@components/MediaGrid.astro';
 import EmptyState from '@components/EmptyState.astro';
-import { contentTabs, subTabs, getSubTab } from '@config/tabs';
+import { contentTabs, subTabs, getSubTab, getGroup } from '@config/tabs';
 import { getPosts } from '@lib/content';
 import { filterPosts } from '@lib/filters';
 import type { SectionId } from '@types';
@@ -19,6 +19,7 @@ export const getStaticPaths: GetStaticPaths = () =>
 
 const { tab, section } = Astro.props as { tab: (typeof contentTabs)[number]; section: SectionId };
 const sub = getSubTab(section)!;
+const group = getGroup(tab.group);
 
 const posts = filterPosts(await getPosts(), tab, section);
 
@@ -31,6 +32,7 @@ const isMedia = section === 'screenshots' || section === 'gallery';
   <SubNav tabId={tab.id} active={section} />
 
   <header class="page-head">
+    {group && <p class="page-head__group">{group.label}</p>}
     <h1 class="page-head__title">{isAllProfiles ? '모든 캐릭터 프로필' : tab.label}</h1>
     <p class="page-head__count">{posts.length} entries</p>
   </header>
