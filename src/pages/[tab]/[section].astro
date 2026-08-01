@@ -10,6 +10,7 @@ import EmptyState from '@components/EmptyState.astro';
 import { contentTabs, subTabs, getSubTab, getGroup } from '@config/tabs';
 import { getPosts } from '@lib/content';
 import { filterPosts } from '@lib/filters';
+import { getMedia, warnUnknownFolders } from '@lib/media';
 import type { SectionId } from '@types';
 
 export const getStaticPaths: GetStaticPaths = () =>
@@ -21,11 +22,18 @@ const { tab, section } = Astro.props as { tab: (typeof contentTabs)[number]; sec
 const sub = getSubTab(section)!;
 const group = getGroup(tab.group);
 
-const posts = filterPosts(await getPosts(), tab, section);
+/** Screenshots · Gallery 는 저장소 파일에서, 나머지는 노션에서 읽습니다. */
+const isMedia = section === 'screenshots' || section === 'gallery';
+const knownTabIds = contentTabs.map((t) => t.id);
+
+const media = isMedia ? getMedia(tab, section, knownTabIds) : [];
+const posts = isMedia ? [] : filterPosts(await getPosts(), tab, section);
+const count = isMedia ? media.length : posts.length;
+
+if (isMedia) warnUnknownFolders(knownTabIds);
 
 /** 세계 + Profile 은 모든 캐릭터의 프로필을 한데 모으는 예외 화면입니다. */
 const isAllProfiles = tab.kind === 'world' && section === 'profile';
-const isMedia = section === 'screenshots' || section === 'gallery';
 ---
 
 <BaseLayout title={`${tab.label} · ${sub.label}`} activeTab={tab.id}>
@@ -34,13 +42,20 @@ const isMedia = section === 'screenshots' || section === 'gallery';
   <header class="page-head">
     {group && <p class="page-head__group">{group.label}</p>}
     <h1 class="page-head__title">{isAllProfiles ? '모든 캐릭터 프로필' : tab.label}</h1>
-    <p class="page-head__count">{posts.length} entries</p>
+    <p class="page-head__count">{count} entries</p>
   </header>
 
-  {posts.length === 0 ? (
-    <div style="padding-block:1.5rem 3rem"><EmptyState /></div>
+  {count === 0 ? (
+    <div style="padding-block:1.5rem 3rem">
+      <EmptyState
+        title={isMedia ? '아직 올린 이미지가 없습니다' : undefined}
+        hint={isMedia
+          ? `media/${section}/${tab.id}/ 폴더에 파일을 넣고 푸시하면 여기에 나타납니다.`
+          : undefined}
+      />
+    </div>
   ) : isMedia ? (
-    <MediaGrid posts={posts} />
+    <MediaGrid entries={media} />
   ) : section === 'profile' ? (
     <div class="grid grid--wide">
       {posts.map((post) => <ProfileCard post={post} />)}

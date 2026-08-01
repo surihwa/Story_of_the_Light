@@ -20,8 +20,7 @@ const sub = getSubTab(post.section)!;
 const group = getGroup(homeTab.group);
 
 /** 본문 이미지는 이미 html 안에 들어 있으므로, 파일 속성으로 붙인 것만 아래에 따로 깝니다. */
-const isMedia = post.section === 'screenshots' || post.section === 'gallery';
-const extraImages = isMedia ? post.images.filter((img) => !post.html.includes(img.src)) : [];
+const extraImages = post.images.filter((img) => !post.html.includes(img.src));
 ---
 
 <BaseLayout title={post.title || post.numberLabel || sub.label} activeTab={homeTab.id}>

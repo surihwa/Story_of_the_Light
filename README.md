@@ -25,6 +25,9 @@ npm run build
 ## 디렉토리 구조
 
 ```
+media/                   Screenshots · Gallery 원본 이미지 (직접 넣는 곳)
+scripts/
+└── build-media.mjs      빌드 전에 이미지를 최적화해 public/media/ 로 내보냄
 integrations/
 └── notion-assets.mjs    빌드 후 노션 이미지를 dist/ 로 옮기는 Astro 통합
 
@@ -84,9 +87,9 @@ src/
 | Profile | `캐릭터` | `번호` (숫자) | `탭` |
 | Story | `제목` | `번호` (숫자) | `탭`, `날짜` |
 | Logs | (비워 둠) | `번호` (ID) | `탭` |
-| Screenshots | (비워 둠) | `번호` (ID) | `탭` |
-| Gallery | (비워 둠) | `번호` (ID) | `탭` |
 | 연표 | `내용` | — | `시기`, `관련 캐릭터`, `순서`(선택) |
+
+**Screenshots 와 Gallery 는 노션을 쓰지 않습니다.** 저장소의 `media/` 폴더에 파일을 넣습니다. → [media/README.md](media/README.md)
 
 > 노션은 DB마다 제목 속성을 하나 반드시 갖습니다. Logs·Screenshots·Gallery는 그 칸을 그냥 비워 두면 되고, 사이트에서도 쓰이지 않습니다.
 
@@ -99,17 +102,31 @@ src/
 
 어느 카테고리의 `번호`를 숫자에서 ID로 바꾸면 정렬도 알아서 따라갑니다. 이 판단을 뒤집고 싶을 때만 `src/config/sources.ts`의 해당 항목에 `direction: 'asc'` 또는 `'desc'`를 적어 주세요.
 
-### 이미지를 어디에 넣을지
+---
 
-**두 방법 모두 동작합니다.** 파일 속성(`이미지`)에 붙여도 되고, 노션 페이지 본문에 그냥 붙여넣어도 됩니다. 사이트는 양쪽을 합쳐 한 그리드에 늘어놓습니다.
+## 이미지 (Screenshots · Gallery)
 
-| | 파일 속성 `이미지` | 페이지 본문 |
-|---|---|---|
-| 한꺼번에 여러 장 올리기 | 드래그로 ○ | 붙여넣기로 ○ |
-| 순서 바꾸기 | 어려움 | 드래그로 자유롭게 ○ |
-| 장마다 캡션 달기 | 불가 | 가능 ○ |
+노션에 큰 이미지를 쌓으면 요금제 용량에 걸리고 파일 URL도 한 시간이면 만료됩니다. 그래서 이 둘만 저장소 파일로 관리합니다.
 
-**한 행에 여러 장을 묶고 캡션도 달 거라면 본문**, **한 행에 한 장씩 ID로 번호만 매길 거라면 파일 속성**이 편합니다. 파일 속성을 쓰려면 DB에 `이미지`라는 이름의 **파일 및 미디어** 속성을 추가하세요. 이름이 다르면 찾지 못합니다.
+```
+media/
+├── screenshots/
+│   ├── surihwa/          ← 서리화 탭에 뜹니다
+│   ├── frost_library/    ← 상서고 탭
+│   └── world/            ← 세계 탭
+└── gallery/
+    └── (같은 구조)
+```
+
+폴더 이름은 중분류의 주소 이름과 같습니다. 파일 이름은 `012_눈 내리는 쿠르잔.jpg` 형태로, **번호가 큰 것이 위에 옵니다.** 번호와 설명 모두 생략할 수 있습니다. 자세한 규칙은 [media/README.md](media/README.md)에 있습니다.
+
+### 원본은 배포되지 않습니다
+
+`scripts/build-media.mjs`가 빌드 전에 카드용(400·800px)과 확대용(1600px) WebP를 만들어 `public/media/`로 내보냅니다. **원본은 저장소에만 남고 사이트에는 들어가지 않습니다.** 테스트로 5.9MB 원본 8장을 넣었을 때 배포물의 이미지는 2.0MB였습니다.
+
+한 번 변환한 파일은 다시 만들지 않으므로 사진이 늘어도 빌드가 느려지지 않고, 원본을 지우면 변환본도 함께 정리됩니다.
+
+이미지를 누르면 페이지를 떠나지 않고 그 자리에서 큰 화면이 뜹니다. 바깥을 누르거나 Esc로 닫습니다.
 
 ---
 
@@ -181,8 +198,8 @@ OC · Pair · World          ← 대분류 (groups)
 1. `astro.config.mjs`는 `https://surihwa.github.io/Story_of_the_Light/`에 맞춰 설정돼 있습니다.
    저장소 이름을 바꾸면 `base`도 함께 바꿔야 CSS와 내부 링크가 살아 있습니다.
 2. 저장소 **Settings → Pages → Source**를 `GitHub Actions`로 바꿉니다.
-3. **Settings → Secrets and variables → Actions**에 일곱 개를 등록합니다.
-   `NOTION_TOKEN` · `NOTION_PROFILE_DB` · `NOTION_STORY_DB` · `NOTION_LOGS_DB` · `NOTION_SCREENSHOTS_DB` · `NOTION_GALLERY_DB` · `NOTION_TIMELINE_DB`
+3. **Settings → Secrets and variables → Actions**에 다섯 개를 등록합니다.
+   `NOTION_TOKEN` · `NOTION_PROFILE_DB` · `NOTION_STORY_DB` · `NOTION_LOGS_DB` · `NOTION_TIMELINE_DB`
 4. `main`에 푸시하면 배포됩니다.
 
 토큰과 DB ID는 코드에 넣지 않습니다. 내 컴퓨터에서는 `.gitignore`된 `.env`가, 깃허브에서는 저장소 Secrets가 값을 공급하고, 빌드 결과물에는 남지 않습니다. 시크릿을 빠뜨린 채 배포되는 것을 막기 위해 워크플로의 `Check secrets` 단계와 빌드 코드가 이중으로 검사합니다. 자세한 절차는 [docs/NOTION_SETUP.md](docs/NOTION_SETUP.md#6-깃허브에-올릴-때--토큰은-코드에-넣지-않습니다)에 있습니다.

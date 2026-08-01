@@ -51,7 +51,32 @@ export interface Era {
   order: number;
 }
 
-/** 노션 이미지 한 장 */
+/**
+ * 저장소 파일에서 읽은 이미지 한 장.
+ * Screenshots · Gallery 에 쓰입니다.
+ */
+export interface MediaVariant {
+  src: string;
+  width: number;
+}
+
+export interface MediaEntry {
+  /** 원본 파일 경로 (고유 키) */
+  id: string;
+  section: 'screenshots' | 'gallery';
+  /** 파일이 들어 있던 폴더 = 중분류 id */
+  tabId: string;
+  /** 파일 이름 앞의 번호. 없으면 null */
+  number: number | null;
+  /** 파일 이름에서 뽑은 설명 */
+  caption: string;
+  width: number | null;
+  height: number | null;
+  /** 빌드 때 만들어 둔 크기별 WebP */
+  variants: { sm: MediaVariant; md: MediaVariant; lg: MediaVariant };
+}
+
+/** 노션 본문에 들어 있던 이미지 한 장 */
 export interface MediaItem {
   src: string;
   alt: string;

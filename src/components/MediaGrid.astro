@@ -1,31 +1,69 @@
 ---
-import type { Post } from '@types';
-import { url } from '@lib/url';
+import type { MediaEntry } from '@types';
 
-interface Props { posts: Post[] }
-const { posts } = Astro.props;
+interface Props { entries: MediaEntry[] }
+const { entries } = Astro.props;
 
-/** 한 행에 여러 장이 붙어 있어도 모두 펼쳐서 한 그리드에 늘어놓습니다. */
-const items = posts.flatMap((post) =>
-  post.images.map((image, i) => ({
-    ...image,
-    postId: post.id,
-    label: post.numberLabel && post.images.length > 1
-      ? `${post.numberLabel}-${i + 1}`
-      : post.numberLabel,
-  })),
-);
+/**
+ * 이미지는 `scripts/build-media.mjs` 가 빌드 전에 미리 변환해 둡니다.
+ * 여기서는 만들어진 크기 중 화면에 맞는 것을 고르기만 합니다.
+ */
 ---
 
 <div class="media">
-  {items.map((item) => (
+  {entries.map((entry) => (
     <figure class="media__item">
-      <a href={url(`post/${item.postId}`)}>
-        <img src={item.src} alt={item.alt || item.label || ''} loading="lazy" />
-      </a>
-      {(item.caption || item.label) && (
-        <figcaption class="media__cap">{item.caption || item.label}</figcaption>
-      )}
+      <button
+        class="media__open"
+        type="button"
+        data-full={entry.variants.lg.src}
+        data-caption={entry.caption}
+        aria-label={entry.caption ? `${entry.caption} 크게 보기` : '이미지 크게 보기'}
+      >
+        <img
+          src={entry.variants.md.src}
+          srcset={`${entry.variants.sm.src} ${entry.variants.sm.width}w, ${entry.variants.md.src} ${entry.variants.md.width}w`}
+          sizes="(max-width: 640px) 100vw, 320px"
+          alt={entry.caption}
+          width={entry.width ?? undefined}
+          height={entry.height ?? undefined}
+          loading="lazy"
+          decoding="async"
+        />
+      </button>
+      {entry.caption && <figcaption class="media__cap">{entry.caption}</figcaption>}
     </figure>
   ))}
 </div>
+
+{/* 페이지를 떠나지 않고 큰 이미지를 보는 확대창 */}
+<dialog class="lightbox" id="lightbox">
+  <button class="lightbox__close" type="button" aria-label="닫기">✕</button>
+  <img class="lightbox__img" src="" alt="" />
+  <p class="lightbox__cap"></p>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+  if (dialog) {
+    const img = dialog.querySelector<HTMLImageElement>('.lightbox__img')!;
+    const cap = dialog.querySelector<HTMLParagraphElement>('.lightbox__cap')!;
+
+    document.querySelectorAll<HTMLButtonElement>('.media__open').forEach((button) => {
+      button.addEventListener('click', () => {
+        img.src = button.dataset.full ?? '';
+        img.alt = button.dataset.caption ?? '';
+        cap.textContent = button.dataset.caption ?? '';
+        dialog.showModal();
+      });
+    });
+
+    // 닫기 버튼, 바깥 클릭, Esc 모두로 닫힙니다.
+    dialog.querySelector('.lightbox__close')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    // 닫은 뒤 큰 이미지를 메모리에서 놓아 줍니다.
+    dialog.addEventListener('close', () => { img.src = ''; });
+  }
+</script>

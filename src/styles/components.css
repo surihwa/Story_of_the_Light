@@ -317,23 +317,78 @@
 .media__item {
   position: relative;
   overflow: hidden;
+  margin: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
 }
-.media__item img {
+.media__open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.media__open img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-.media__item:hover img { transform: scale(1.03); }
+.media__item:hover .media__open img { transform: scale(1.03); }
 .media__cap {
   padding: 0.5rem 0.7rem;
   font-size: var(--fs-xs);
   color: var(--ink-3);
   border-top: 1px solid var(--line);
 }
+
+/* ---------- 확대창 (같은 화면에서 원본 보기) ---------- */
+.lightbox {
+  width: min(94vw, 1400px);
+  max-width: none;
+  max-height: 94vh;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  overflow: hidden;
+}
+.lightbox::backdrop {
+  background: rgb(15 23 42 / 0.62);
+  backdrop-filter: blur(3px);
+}
+.lightbox__img {
+  display: block;
+  width: 100%;
+  max-height: 84vh;
+  object-fit: contain;
+  background: var(--paper);
+}
+.lightbox__cap {
+  padding: 0.7rem 1rem;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.lightbox__cap:empty { display: none; }
+.lightbox__close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 2;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: rgb(255 255 255 / 0.88);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.lightbox__close:hover { background: #fff; }
 
 /* ---------- Logs: 제목 없이 본문만, 높이는 제각각 열만 맞춤 ---------- */
 .log-columns {

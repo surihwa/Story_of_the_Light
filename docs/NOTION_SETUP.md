@@ -9,9 +9,10 @@
 3. Capabilities는 **Read content**만 켜면 충분합니다.
 4. 발급된 **Internal Integration Secret**을 복사합니다. → `NOTION_TOKEN`
 
-## 2. 데이터베이스 여섯 개 만들기
+## 2. 데이터베이스 네 개 만들기
 
-카테고리마다 하나씩, 그리고 연표용으로 하나. 속성 이름은 아래 표대로 **한 글자도 다르지 않게** 맞춰 주세요. 코드가 이름으로 찾습니다.
+Profile · Story · Logs, 그리고 연표.
+Screenshots 와 Gallery 는 노션을 쓰지 않으므로 만들지 않습니다. 속성 이름은 아래 표대로 **한 글자도 다르지 않게** 맞춰 주세요. 코드가 이름으로 찾습니다.
 
 ### 공통
 
@@ -46,14 +47,15 @@ World 세계
 | `탭` | 다중 선택 | |
 | `날짜` | 날짜 | 비워도 됩니다 |
 
-### Logs / Screenshots / Gallery
+### Logs
 
 | 속성 | 형식 | 비고 |
 |---|---|---|
 | (제목 속성) | **제목** | 이름은 아무거나. **비워 둡니다.** 사이트에서 안 씁니다 |
 | `번호` | **ID** | 새 행을 만들면 자동으로 붙습니다 |
 | `탭` | 다중 선택 | |
-| `이미지` | 파일 및 미디어 | Screenshots · Gallery만. 본문에 넣을 거면 없어도 됩니다 |
+
+> **Screenshots 와 Gallery 는 노션 DB 를 만들지 않습니다.** 저장소의 `media/` 폴더에 파일을 넣으면 됩니다. 자세한 규칙은 `media/README.md` 를 보세요.
 
 **ID 속성 만드는 법**: 표 헤더의 `+` → 속성 유형에서 **ID**(고유 ID) 선택 → 접두사에 `LOG` 처럼 적으면 사이트에도 `LOG-12`로 표시됩니다. 비워 두면 숫자만 나옵니다. 기존 행에도 자동으로 일괄 부여됩니다.
 
@@ -75,7 +77,7 @@ Logs는 제목 없이 **본문만** 카드에 보여 줍니다. 10줄까지는 �
 ## 3. 통합을 DB마다 초대하기
 
 각 DB 페이지 오른쪽 위 **···** → **Connections** → 1단계에서 만든 통합을 선택합니다.
-**여섯 개 전부** 해 줘야 합니다. 이걸 빼먹으면 그 DB만 조용히 비어 나옵니다. 가장 흔한 실수예요.
+**네 개 전부** 해 줘야 합니다. 이걸 빼먹으면 그 DB만 조용히 비어 나옵니다. 가장 흔한 실수예요.
 
 ## 4. DB ID 찾기
 
@@ -99,8 +101,6 @@ NOTION_TOKEN=secret_...
 NOTION_PROFILE_DB=...
 NOTION_STORY_DB=...
 NOTION_LOGS_DB=...
-NOTION_SCREENSHOTS_DB=...
-NOTION_GALLERY_DB=...
 NOTION_TIMELINE_DB=...
 ```
 
@@ -133,7 +133,7 @@ npm run build
 
 저장소 → **Settings** → 왼쪽 **Secrets and variables** → **Actions** → **New repository secret**
 
-일곱 개를 하나씩 추가합니다. 이름은 아래와 정확히 같아야 합니다.
+다섯 개를 하나씩 추가합니다. 이름은 아래와 정확히 같아야 합니다.
 
 | Name | Secret |
 |---|---|
@@ -141,8 +141,6 @@ npm run build
 | `NOTION_PROFILE_DB` | Profile DB의 32자리 ID |
 | `NOTION_STORY_DB` | Story DB ID |
 | `NOTION_LOGS_DB` | Logs DB ID |
-| `NOTION_SCREENSHOTS_DB` | Screenshots DB ID |
-| `NOTION_GALLERY_DB` | Gallery DB ID |
 | `NOTION_TIMELINE_DB` | 연표 DB ID |
 
 등록한 값은 나중에 다시 열어 볼 수 없습니다. 바꿀 수만 있으니, 노션 통합 페이지에서 언제든 다시 복사할 수 있다는 점만 기억하면 됩니다.
@@ -179,14 +177,15 @@ npm run build
 **Profile 배지가 회색으로만 나옴**
 `캐릭터` 값이 `characters.ts`의 키와 다릅니다. 매칭 실패 시 회색으로 대체됩니다.
 
-**이미지가 안 보임**
-확인 순서는 이렇습니다.
+**Screenshots · Gallery 이미지가 안 보임**
+이 둘은 노션이 아니라 `media/` 폴더를 읽습니다.
 
-1. 파일 속성에 넣었다면 속성 이름이 정확히 `이미지`이고 유형이 **파일 및 미디어**인지.
-2. 빌드 로그에 `[images] 내려받지 못해…` 경고가 있는지. 있으면 그 URL이 원인입니다.
-3. `dist/notion-assets/`에 파일이 들어 있는지. 비어 있으면 이미지를 아예 못 찾은 것입니다.
+1. 빌드 로그에 `[media] 원본 N장` 이 몇 장으로 찍히는지 봅니다. 0장이면 파일을 못 찾은 것입니다.
+2. 폴더 이름이 탭의 주소 이름과 같은지 확인합니다. 다르면 `[media] '...' 는 탭 이름과 맞지 않아` 경고가 뜨고 세계 탭으로 갑니다.
+3. 확장자가 `.jpg .jpeg .png .gif .webp .avif` 중 하나인지 확인합니다.
 
-노션 파일 URL은 약 1시간 뒤 만료되기 때문에, 빌드할 때 `public/notion-assets/`로 내려받아 두고 빌드가 끝난 뒤 `dist/`로 옮깁니다(`integrations/notion-assets.mjs`). 이 폴더는 `.gitignore`에 있으니 커밋할 필요 없습니다.
+**Profile · Story · Logs 본문 이미지가 안 보임**
+노션 파일 URL은 약 1시간 뒤 만료되기 때문에, 빌드할 때 `public/notion-assets/`로 내려받아 두고 빌드가 끝난 뒤 `dist/`로 옮깁니다(`integrations/notion-assets.mjs`). 로그에 `[images] 내려받지 못해…` 경고가 있으면 그 URL이 원인입니다.
 
 **GitHub Pages에서 CSS가 깨짐**
 `astro.config.mjs`의 `base`가 저장소 이름과 다릅니다.

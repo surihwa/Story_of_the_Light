@@ -37,14 +37,11 @@ jobs:
           NOTION_PROFILE_DB: ${{ secrets.NOTION_PROFILE_DB }}
           NOTION_STORY_DB: ${{ secrets.NOTION_STORY_DB }}
           NOTION_LOGS_DB: ${{ secrets.NOTION_LOGS_DB }}
-          NOTION_SCREENSHOTS_DB: ${{ secrets.NOTION_SCREENSHOTS_DB }}
-          NOTION_GALLERY_DB: ${{ secrets.NOTION_GALLERY_DB }}
           NOTION_TIMELINE_DB: ${{ secrets.NOTION_TIMELINE_DB }}
         run: |
           missing=()
           for name in NOTION_TOKEN NOTION_PROFILE_DB NOTION_STORY_DB \
-                      NOTION_LOGS_DB NOTION_SCREENSHOTS_DB NOTION_GALLERY_DB \
-                      NOTION_TIMELINE_DB; do
+                      NOTION_LOGS_DB NOTION_TIMELINE_DB; do
             [ -z "${!name}" ] && missing+=("$name")
           done
           if [ ${#missing[@]} -gt 0 ]; then
@@ -53,7 +50,7 @@ jobs:
             echo "아직 안 만든 DB 라면 그 이름만 빼고 아래 build 단계에서도 지우면 됩니다."
             exit 1
           fi
-          echo "시크릿 7개 모두 확인했습니다."
+          echo "시크릿 5개 모두 확인했습니다."
 
       - name: Build with Notion content
         env:
@@ -61,8 +58,6 @@ jobs:
           NOTION_PROFILE_DB: ${{ secrets.NOTION_PROFILE_DB }}
           NOTION_STORY_DB: ${{ secrets.NOTION_STORY_DB }}
           NOTION_LOGS_DB: ${{ secrets.NOTION_LOGS_DB }}
-          NOTION_SCREENSHOTS_DB: ${{ secrets.NOTION_SCREENSHOTS_DB }}
-          NOTION_GALLERY_DB: ${{ secrets.NOTION_GALLERY_DB }}
           NOTION_TIMELINE_DB: ${{ secrets.NOTION_TIMELINE_DB }}
         run: npm run build
       - uses: actions/configure-pages@v5

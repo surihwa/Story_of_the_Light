@@ -29,14 +29,22 @@ export const sources: SourceConfig[] = [
     dateProp: '날짜',
   },
   { section: 'logs', env: 'NOTION_LOGS_DB', numberProp: '번호' },
-  { section: 'screenshots', env: 'NOTION_SCREENSHOTS_DB', numberProp: '번호' },
-  { section: 'gallery', env: 'NOTION_GALLERY_DB', numberProp: '번호' },
 ];
+
+/**
+ * Screenshots · Gallery 는 노션을 쓰지 않습니다.
+ * 저장소의 `src/media/{screenshots|gallery}/{탭 id}/` 폴더에 파일을 넣으면 됩니다.
+ * 자세한 규칙은 src/media/README.md 를 보세요.
+ */
+export const fileSections = ['screenshots', 'gallery'] as const;
 
 /** 탭 속성 이름 (모든 DB 공통) */
 export const TAB_PROP = '탭';
 
-/** 이미지를 파일 속성으로도 붙일 수 있게 열어 둡니다. 없으면 본문 이미지만 씁니다. */
+/**
+ * Profile · Story · Logs 에서 파일 속성으로 이미지를 붙이고 싶을 때 쓰는 속성 이름.
+ * 없어도 되고, 노션 본문에 그냥 넣어도 됩니다.
+ */
 export const IMAGE_PROP = '이미지';
 
 export const timelineSource = {

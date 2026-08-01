@@ -3,14 +3,32 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@lib/*": ["src/lib/*"],
-      "@config/*": ["src/config/*"],
-      "@styles/*": ["src/styles/*"],
-      "@types": ["src/types/index.ts"]
-    }
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@layouts/*": [
+        "src/layouts/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@styles/*": [
+        "src/styles/*"
+      ],
+      "@types": [
+        "src/types/index.ts"
+      ]
+    },
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*", "*.mjs"],
-  "exclude": ["dist"]
+  "include": [
+    "src/**/*",
+    "*.mjs"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }
