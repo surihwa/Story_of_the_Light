@@ -48,9 +48,11 @@ function groupSeam(groupId: string) {
       ))}
     </ul>
 
-    {/* 2단계 — 현재 대분류에 속한 중분류. 대분류를 고르기 전에는 전체를 보여 줍니다. */}
+    {/* 2단계 — 현재 대분류에 속한 중분류.
+        홈처럼 대분류가 정해지지 않은 화면에서는 이 줄을 아예 내보내지 않습니다. */}
+    {activeGroup && (
     <ul class="mainnav__list">
-      {(activeGroup ? tabsOf(activeGroup) : mainTabs).map((tab) => (
+      {tabsOf(activeGroup).map((tab) => (
         <li class="mainnav__item">
           <a
             class="mainnav__link"
@@ -69,5 +71,6 @@ function groupSeam(groupId: string) {
         </li>
       ))}
     </ul>
+    )}
   </div>
 </nav>

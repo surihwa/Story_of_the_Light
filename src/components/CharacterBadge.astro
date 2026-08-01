@@ -4,6 +4,8 @@ import { colorVars } from '@lib/theme';
 
 interface Props { name: string }
 const { name } = Astro.props;
+
+/** 노션에 짧은 이름으로 적혀 있어도 화면에는 풀네임을 씁니다. */
 const character = getCharacter(name);
 const color = character?.color ?? '#94A3B8';
 ---

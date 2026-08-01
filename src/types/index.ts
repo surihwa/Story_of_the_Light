@@ -1,10 +1,13 @@
 /** 캐릭터 한 명(또는 그룹)의 마스터 정보 */
 export interface Character {
   id: string;
+  /** 화면에 노출되는 이름 (풀네임) */
   name: string;
   role: string;
   /** 테마 강조색 (HEX) */
   color: string;
+  /** 노션에 짧은 이름으로 적어 둔 경우를 위한 별칭 */
+  aliases?: string[];
   note?: string;
 }
 
@@ -26,8 +29,10 @@ export interface MainTab {
   label: string;
   caption: string;
   kind: TabKind;
-  /** 이 탭에 속한 캐릭터 이름들 (노션 옵션명과 동일) */
+  /** 이 탭에 속한 캐릭터 이름들 */
   characters: string[];
+  /** 노션 `탭` 옵션을 예전 이름으로 적어 둔 경우를 위한 별칭 */
+  aliases?: string[];
   /** 강조색. dual 이면 2개. */
   accents: string[];
 }

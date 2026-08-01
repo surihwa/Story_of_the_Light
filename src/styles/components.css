@@ -38,9 +38,11 @@
   justify-content: center;
   gap: 0.2rem 1.6rem;
   margin: 0;
-  padding: 0 0 0.55rem;
+  padding: 0;
   list-style: none;
 }
+/* 중분류 줄이 뒤따를 때만 사이를 띄웁니다. */
+.groupnav:has(+ .mainnav__list) { padding-bottom: 0.55rem; }
 .groupnav__item { display: flex; }
 .groupnav__link {
   position: relative;
@@ -342,13 +344,9 @@
 .log-card {
   break-inside: avoid;
   margin-bottom: 1rem;
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  padding: 1.1rem 1.25rem 1.2rem;
+  transition: box-shadow 0.22s ease;
 }
-.log-card:hover {
-  transform: translateY(-2px);
-  box-shadow: inset 0 1px 0 var(--bevel-hi), 0 8px 20px rgb(var(--accent-rgb) / 0.14);
-}
-.log-card__link { display: block; padding: 1.1rem 1.25rem 1.2rem; }
 .log-card__no {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
@@ -357,18 +355,36 @@
   margin-bottom: 0.6rem;
 }
 
-/* 10줄까지 그대로 두고, 넘치면 잘라 냅니다. 잘렸는지는 스크립트가 표시해 줍니다. */
+/* 펼침 상태를 담는 체크박스. 눈에 보이지 않지만 포커스는 받습니다. */
+.log-card__toggle {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* 열 줄까지 보여 주고 나머지는 접습니다. */
 .log-card__clip {
   --lines: 10;
   --lh: 1.85;
   --fs: 0.95rem;
   max-height: calc(var(--lines) * var(--lh) * var(--fs));
   overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.3, 0.7, 0.3, 1);
 }
-.log-card__clip[data-clipped='true'] {
+/* 잘린 카드만 아래를 흐리게 해서 더 있다는 걸 알립니다. */
+.log-card.is-clipped .log-card__clip {
   -webkit-mask-image: linear-gradient(180deg, #000 74%, transparent);
   mask-image: linear-gradient(180deg, #000 74%, transparent);
 }
+/* 펼치면 마스크를 걷고 높이를 풀어 줍니다. */
+.log-card__toggle:checked ~ .log-card__clip {
+  max-height: 200rem;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 .log-card__body {
   font-size: var(--fs, 0.95rem);
   line-height: 1.85;
@@ -378,11 +394,51 @@
 .log-card__body h3,
 .log-card__body h4 { margin-top: 0.9rem; font-size: 1rem; }
 .log-card__body figure { margin: 0.8rem 0; }
+
+/* 더보기 / 접기 */
 .log-card__more {
-  margin-top: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.8rem;
+  padding: 0.1rem 0;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
   color: var(--accent-text);
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+.log-card__more:hover { border-bottom-color: currentColor; }
+.log-card__more::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition: rotate 0.3s ease, translate 0.3s ease;
+}
+.log-card__toggle:checked ~ .log-card__more::after {
+  rotate: 225deg;
+  translate: 0 1px;
+}
+/* 접혀 있을 땐 '더보기', 펼치면 '접기' 한쪽만 보입니다. */
+.log-card__more-close { display: none; }
+.log-card__toggle:checked ~ .log-card__more .log-card__more-open { display: none; }
+.log-card__toggle:checked ~ .log-card__more .log-card__more-close { display: inline; }
+
+/* 스크립트가 '잘리지 않았다'고 판정한 카드에서는 버튼을 숨깁니다.
+   스크립트가 돌지 않으면 is-measured 가 붙지 않아 버튼이 그대로 남습니다. */
+.log-card:not(.is-clipped) .log-card__more { display: none; }
+.log-card__toggle:checked ~ .log-card__more { display: inline-flex; }
+
+/* 키보드 사용자를 위한 포커스 표시 */
+.log-card__toggle:focus-visible ~ .log-card__more {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 @media (max-width: 640px) {

@@ -1,5 +1,5 @@
 import type { Post, TimelineEntry } from '@types';
-import { mainTabs } from '@config/tabs';
+import { tabLabelToId } from '@config/tabs';
 import { sources, timelineSource } from '@config/sources';
 import { dbId, fetchBlocks, hasToken, queryAll } from './notion';
 import { toPost, toTimelineEntry } from './mapper';
@@ -11,8 +11,6 @@ import { mockPosts, mockTimeline } from './mock';
  * 빌드 중 여러 페이지에서 호출되므로 한 번만 읽고 결과를 재사용합니다.
  * 노션 자격 증명이 없으면 샘플 데이터로 조용히 대체해서, 클론 직후에도 화면이 뜹니다.
  */
-
-const tabLabelToId = new Map(mainTabs.map((t) => [t.label, t.id]));
 
 /** CI 에서는 자격 증명 누락을 경고가 아니라 실패로 다룹니다. */
 function isStrict(): boolean {

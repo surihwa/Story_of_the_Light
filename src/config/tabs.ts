@@ -28,22 +28,24 @@ export const mainTabs: MainTab[] = [
     kind: 'single', characters: ['카르네아데스'], accents: ['#ff9302'],
   },
   {
-    id: 'laurette', group: 'oc', label: '로레트', caption: '음유시인',
-    kind: 'single', characters: ['로레트'], accents: ['#fae04f'],
+    id: 'laurette', group: 'oc', label: '로레트 모린', caption: '음유시인',
+    kind: 'single', characters: ['로레트 모린'], accents: ['#fae04f'],
+    aliases: ['로레트'],
   },
   {
-    id: 'isnotti', group: 'oc', label: '이스노티', caption: '암흑기사',
-    kind: 'single', characters: ['이스노티'], accents: ['#0f163a'],
+    id: 'isnotti', group: 'oc', label: '이스노티 헤멜', caption: '암흑기사',
+    kind: 'single', characters: ['이스노티 헤멜'], accents: ['#0f163a'],
+    aliases: ['이스노티'],
   },
 
   // ── Pair ────────────────────────────────────────────
   {
-    id: 'frost_library', group: 'pair', label: '상서고', caption: '서리화 & 야슈톨라',
-    kind: 'dual', characters: ['서리화', '야슈톨라'], accents: ['#342151', '#6e14b8'],
+    id: 'frost_library', group: 'pair', label: '상서고', caption: '서리화 & 야슈톨라 룰',
+    kind: 'dual', characters: ['서리화', '야슈톨라 룰'], accents: ['#342151', '#6e14b8'],
   },
   {
-    id: 'laurentti', group: 'pair', label: '로렌티', caption: '로레트 & 이스노티',
-    kind: 'dual', characters: ['로레트', '이스노티'], accents: ['#fae04f', '#0f163a'],
+    id: 'laurentti', group: 'pair', label: '로렌티', caption: '로레트 모린 & 이스노티 헤멜',
+    kind: 'dual', characters: ['로레트 모린', '이스노티 헤멜'], accents: ['#fae04f', '#0f163a'],
   },
   {
     id: 'scholasticate', group: 'pair', label: '신학원', caption: '성 앙달림 신학원',
@@ -83,6 +85,13 @@ export function getTab(id: string): MainTab | undefined {
 
 export function getSubTab(id: string): SubTab | undefined {
   return subTabs.find((t) => t.id === id);
+}
+
+/** 노션 `탭` 옵션 이름(별칭 포함) → 중분류 id */
+export const tabLabelToId = new Map<string, string>();
+for (const tab of mainTabs) {
+  tabLabelToId.set(tab.label, tab.id);
+  for (const alias of tab.aliases ?? []) tabLabelToId.set(alias, tab.id);
 }
 
 export function getGroup(id: string): TabGroup | undefined {
