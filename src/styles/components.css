@@ -413,16 +413,22 @@
   color: var(--ink-3);
   margin-bottom: 0.75rem;
 }
-.log-card__body {
+/*
+ * `.prose` 와 함께 붙기 때문에 반드시 두 클래스를 겹쳐 써야 합니다.
+ * `.log-card__body` 하나만 쓰면 특이도가 같은 `.prose` 가 뒤에 나와서 이겨 버립니다.
+ */
+.log-card__body.prose {
   font-family: var(--font-body);
   font-size: 0.9rem;
   line-height: 1.9;
 }
-.log-card__body > * + * { margin-top: 0.7rem; }
-.log-card__body h2,
-.log-card__body h3,
-.log-card__body h4 { margin-top: 1.2rem; font-size: 1.02rem; }
-.log-card__body figure { margin: 1.1rem 0; }
+.log-card__body.prose > * + * { margin-top: 0.7rem; }
+.log-card__body.prose h2,
+.log-card__body.prose h3,
+.log-card__body.prose h4 { margin-top: 1.2rem; font-size: 1.02rem; }
+.log-card__body.prose figure { margin: 1.1rem 0; }
+.log-card__body.prose blockquote,
+.log-card__body.prose li { font-family: var(--font-body); }
 
 @media (max-width: 640px) {
   .log-card { padding: 1.15rem 1.25rem 1.25rem; }
@@ -563,14 +569,14 @@
 /* 콜아웃과 같은 산세리프에 한 단계 작은 글자.
    Profile 처럼 설정을 훑어보는 글에 씁니다.
    제목은 원래 크기를 유지해서 본문과의 대비를 키웁니다. */
-.prose--ui {
+.prose.prose--ui {
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   line-height: 1.9;
 }
-.prose--ui > * + * { margin-top: 0.9rem; }
-.prose--ui blockquote,
-.prose--ui li { font-family: var(--font-body); }
+.prose.prose--ui > * + * { margin-top: 0.9rem; }
+.prose.prose--ui blockquote,
+.prose.prose--ui li { font-family: var(--font-body); }
 
 /* ---------- 비어 있는 화면 ---------- */
 .empty {
