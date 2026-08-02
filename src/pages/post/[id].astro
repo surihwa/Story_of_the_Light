@@ -19,6 +19,9 @@ const homeTab = getTab(post.tabs[0] ?? '') ?? mainTabs.find((t) => t.kind === 'w
 const sub = getSubTab(post.section)!;
 const group = getGroup(homeTab.group);
 
+/** Profile 은 설정을 훑어보는 글이라 산세리프 · 작은 글자로 씁니다. */
+const proseClass = post.section === 'profile' ? 'prose prose--ui' : 'prose';
+
 /** 본문 이미지는 이미 html 안에 들어 있으므로, 파일 속성으로 붙인 것만 아래에 따로 깝니다. */
 const extraImages = post.images.filter((img) => !post.html.includes(img.src));
 ---
@@ -35,7 +38,7 @@ const extraImages = post.images.filter((img) => !post.html.includes(img.src));
       </div>
     </header>
 
-    <div class="article__body prose" set:html={post.html} />
+    <div class:list={["article__body", proseClass]} set:html={post.html} />
 
     {extraImages.length > 0 && (
       <div class="article__gallery">
