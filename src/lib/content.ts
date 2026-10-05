@@ -5,6 +5,7 @@ import { dbId, fetchBlocks, hasToken, queryAll } from './notion';
 import { toPost, toTimelineEntry } from './mapper';
 import { renderPage, reportUnsupportedBlocks } from './blocks';
 import { mockPosts, mockTimeline } from './mock';
+import { describeNotionError } from './notion-error';
 
 /**
  * 콘텐츠 진입점.
@@ -38,9 +39,18 @@ async function loadPosts(): Promise<Post[]> {
   }
 
   const posts: Post[] = [];
+  const failures: string[] = [];
 
   for (const source of configured) {
-    const pages = await queryAll(dbId(source.env));
+    let pages;
+    try {
+      pages = await queryAll(dbId(source.env));
+    } catch (err) {
+      // 한 DB 가 막혔다고 바로 멈추지 않습니다.
+      // 나머지도 확인해서 문제를 한 번에 모아 알려 주는 편이 고치기 쉽습니다.
+      failures.push(describeNotionError(err, source.section, source.env, dbId(source.env)));
+      continue;
+    }
 
     for (const page of pages) {
       const post = await toPost(page, source, tabLabelToId);
@@ -61,15 +71,23 @@ async function loadPosts(): Promise<Post[]> {
   // 다루지 못한 블록이 있었다면 여기서 한 번에 알려 줍니다.
   reportUnsupportedBlocks();
 
+  if (failures.length > 0) {
+    throw new Error(`\n\n노션에서 내용을 가져오지 못했습니다.\n\n${failures.join('\n\n')}\n`);
+  }
+
   return posts;
 }
 
 async function loadTimeline(): Promise<TimelineEntry[]> {
   const id = dbId(timelineSource.env);
   if (!hasToken || !id) return mockTimeline;
-  const pages = await queryAll(id);
-  console.log(`[content] timeline: ${pages.length}건`);
-  return pages.map(toTimelineEntry);
+  try {
+    const pages = await queryAll(id);
+    console.log(`[content] timeline: ${pages.length}건`);
+    return pages.map(toTimelineEntry);
+  } catch (err) {
+    throw new Error(`\n\n${describeNotionError(err, 'timeline', timelineSource.env, id)}\n`);
+  }
 }
 
 export function getPosts(): Promise<Post[]> {

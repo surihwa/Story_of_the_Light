@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
 
@@ -52,7 +52,9 @@ jobs:
           fi
           echo "시크릿 5개 모두 확인했습니다."
 
+      # 노션 응답이 느릴 때를 대비해 넉넉히 둡니다.
       - name: Build with Notion content
+        timeout-minutes: 20
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_PROFILE_DB: ${{ secrets.NOTION_PROFILE_DB }}
