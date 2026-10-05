@@ -1,0 +1,74 @@
+---
+import { url } from '@lib/url';
+
+interface Props {
+  current: number;
+  total: number;
+  /** 1쪽 주소. 2쪽부터는 뒤에 `2/` 가 붙습니다. */
+  base: string;
+}
+const { current, total, base } = Astro.props;
+
+/** 1쪽은 깔끔한 주소를 쓰고, 2쪽부터 번호를 붙입니다. */
+function hrefFor(page: number): string {
+  return page === 1 ? url(base) : url(`${base}/${page}`);
+}
+
+/**
+ * 쪽이 많아져도 버튼이 넘치지 않도록 현재 쪽 주변만 보여 주고
+ * 사이를 줄임표로 접습니다. 예: 1 … 4 5 6 … 20
+ */
+function pageList(): (number | 'gap')[] {
+  const window = 1;
+  const pages = new Set<number>([1, total, current]);
+  for (let i = current - window; i <= current + window; i++) {
+    if (i > 1 && i < total) pages.add(i);
+  }
+
+  const sorted = [...pages].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const out: (number | 'gap')[] = [];
+  let prev = 0;
+  for (const page of sorted) {
+    if (prev && page - prev > 1) out.push('gap');
+    out.push(page);
+    prev = page;
+  }
+  return out;
+}
+
+const pages = pageList();
+
+const hasPrev = current > 1;
+const hasNext = current < total;
+---
+
+{total > 1 && (
+  <nav class="pager" aria-label="쪽 넘기기">
+    {/* 갈 곳이 없을 땐 링크가 아니라 글자로 둡니다.
+        비활성 링크라도 href 가 있으면 없는 주소로 이동할 수 있습니다. */}
+    {hasPrev
+      ? <a class="pager__arrow" href={hrefFor(current - 1)} rel="prev">← 이전</a>
+      : <span class="pager__arrow" aria-hidden="true">← 이전</span>}
+
+    <ul class="pager__list">
+      {pages.map((page) =>
+        page === 'gap' ? (
+          <li class="pager__gap" aria-hidden="true">…</li>
+        ) : (
+          <li>
+            <a
+              class="pager__num"
+              href={hrefFor(page)}
+              aria-current={page === current ? 'page' : undefined}
+              aria-label={`${page}쪽`}
+            >{page}</a>
+          </li>
+        ),
+      )}
+    </ul>
+
+    {hasNext
+      ? <a class="pager__arrow" href={hrefFor(current + 1)} rel="next">다음 →</a>
+      : <span class="pager__arrow" aria-hidden="true">다음 →</span>}
+  </nav>
+)}

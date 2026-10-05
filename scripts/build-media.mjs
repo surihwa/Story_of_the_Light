@@ -66,7 +66,7 @@ async function main() {
   let created = 0;
   let skipped = 0;
 
-  for (const section of ['screenshots', 'gallery']) {
+  for (const section of ['screenshots']) {
     const files = await walk(path.join(SRC, section));
 
     for (const { abs, rel } of files) {
@@ -118,7 +118,7 @@ async function main() {
 
   // 지워진 원본에 딸린 결과물은 정리합니다.
   const keep = new Set(entries.flatMap((e) => Object.values(e.variants).map((v) => path.basename(v.src))));
-  for (const section of ['screenshots', 'gallery']) {
+  for (const section of ['screenshots']) {
     const dir = path.join(OUT, section);
     if (!(await exists(dir))) continue;
     for (const name of await readdir(dir)) {

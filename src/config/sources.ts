@@ -32,11 +32,11 @@ export const sources: SourceConfig[] = [
 ];
 
 /**
- * Screenshots · Gallery 는 노션을 쓰지 않습니다.
- * 저장소의 `src/media/{screenshots|gallery}/{탭 id}/` 폴더에 파일을 넣으면 됩니다.
- * 자세한 규칙은 src/media/README.md 를 보세요.
+ * Screenshots 는 노션을 쓰지 않습니다.
+ * 저장소의 `media/screenshots/{탭 id}/` 폴더에 파일을 넣으면 됩니다.
+ * 자세한 규칙은 media/README.md 를 보세요.
  */
-export const fileSections = ['screenshots', 'gallery'] as const;
+export const fileSections = ['screenshots'] as const;
 
 /** 탭 속성 이름 (모든 DB 공통) */
 export const TAB_PROP = '탭';
@@ -46,6 +46,9 @@ export const TAB_PROP = '탭';
  * 없어도 되고, 노션 본문에 그냥 넣어도 됩니다.
  */
 export const IMAGE_PROP = '이미지';
+
+/** Logs 한 쪽에 보여 줄 개수 */
+export const LOGS_PER_PAGE = 10;
 
 export const timelineSource = {
   env: 'NOTION_TIMELINE_DB',

@@ -1,0 +1,36 @@
+---
+import type { GetStaticPaths } from 'astro';
+import SectionView from '@components/SectionView.astro';
+import { contentTabs } from '@config/tabs';
+import { LOGS_PER_PAGE } from '@config/sources';
+import { getPosts } from '@lib/content';
+import { filterPosts } from '@lib/filters';
+import type { MainTab } from '@types';
+
+/**
+ * Logs 의 2쪽 이후만 만듭니다. 1쪽은 `/탭/logs/` 가 맡으므로 여기서 건너뜁니다.
+ * 글이 10개 이하인 탭은 아예 생성되지 않습니다.
+ */
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPosts();
+  const paths = [];
+
+  for (const tab of contentTabs) {
+    const count = filterPosts(posts, tab, 'logs').length;
+    const totalPages = Math.ceil(count / LOGS_PER_PAGE);
+
+    for (let page = 2; page <= totalPages; page++) {
+      paths.push({
+        params: { tab: tab.id, section: 'logs', page: String(page) },
+        props: { tab, page },
+      });
+    }
+  }
+
+  return paths;
+};
+
+const { tab, page } = Astro.props as { tab: MainTab; page: number };
+---
+
+<SectionView tab={tab} section="logs" page={page} />

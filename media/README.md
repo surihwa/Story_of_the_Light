@@ -1,18 +1,16 @@
 # 이미지 폴더
 
-Screenshots 와 Gallery 는 노션이 아니라 **이 폴더의 파일**을 읽습니다.
+Screenshots 는 노션이 아니라 **이 폴더의 파일**을 읽습니다.
 파일을 넣고 커밋해서 푸시하면 다음 배포에 반영됩니다.
 
 ## 어디에 넣나요
 
 ```
 media/
-├── screenshots/
-│   ├── surihwa/          ← 서리화 탭에 뜹니다
-│   ├── frost_library/    ← 상서고 탭
-│   └── world/            ← 세계 탭
-└── gallery/
-    └── (같은 구조)
+└── screenshots/
+    ├── surihwa/          ← 서리화 탭에 뜹니다
+    ├── frost_library/    ← 상서고 탭
+    └── world/            ← 세계 탭
 ```
 
 폴더 이름은 **중분류의 주소 이름**과 같습니다.
@@ -20,12 +18,12 @@ media/
 | 폴더 이름 | 탭 |
 |---|---|
 | `surihwa` | 서리화 |
-| `azem` | 아젬 |
+| `azem` | 카르네아데스 |
 | `laurette` | 로레트 모린 |
 | `isnotti` | 이스노티 헤멜 |
 | `frost_library` | 상서고 |
 | `laurentti` | 로렌티 |
-| `scholasticate` | 신학원 |
+| `scholasticate` | 이브리화 |
 | `maelstrom` | 흑와단 |
 | `world` | 세계 |
 

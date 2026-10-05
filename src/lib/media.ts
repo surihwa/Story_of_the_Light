@@ -3,7 +3,7 @@ import { asset } from './url';
 import manifest from '../generated/media.json';
 
 /**
- * Screenshots · Gallery 는 노션이 아니라 저장소의 `media/` 폴더를 읽습니다.
+ * Screenshots 는 노션이 아니라 저장소의 `media/` 폴더를 읽습니다.
  *
  * 노션에 큰 이미지를 쌓으면 요금제 용량에 걸리고, 파일 URL 도 한 시간이면 만료됩니다.
  * 파일로 두면 두 문제가 모두 사라집니다.

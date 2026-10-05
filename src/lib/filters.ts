@@ -3,7 +3,7 @@ import { sources } from '@config/sources';
 
 /**
  * 메인 탭 + 서브 탭 조합으로 노션 게시물을 걸러 냅니다.
- * Screenshots · Gallery 는 파일에서 읽으므로 여기를 타지 않습니다 (lib/media.ts).
+ * Screenshots 는 파일에서 읽으므로 여기를 타지 않습니다 (lib/media.ts).
  *
  * 규칙
  *  - 일반 탭: `탭` 속성에 이 탭이 들어간 글만.

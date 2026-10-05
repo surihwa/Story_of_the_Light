@@ -24,8 +24,9 @@ export const mainTabs: MainTab[] = [
     kind: 'single', characters: ['서리화'], accents: ['#342151'],
   },
   {
-    id: 'azem', group: 'oc', label: '아젬', caption: '카르네아데스',
+    id: 'azem', group: 'oc', label: '카르네아데스', caption: '아젬',
     kind: 'single', characters: ['카르네아데스'], accents: ['#ff9302'],
+    aliases: ['아젬'],
   },
   {
     id: 'laurette', group: 'oc', label: '로레트 모린', caption: '음유시인',
@@ -48,8 +49,10 @@ export const mainTabs: MainTab[] = [
     kind: 'dual', characters: ['로레트 모린', '이스노티 헤멜'], accents: ['#fae04f', '#0f163a'],
   },
   {
-    id: 'scholasticate', group: 'pair', label: '신학원', caption: '성 앙달림 신학원',
-    kind: 'group', characters: ['신학원'], accents: ['#b9d9ec'],
+    // 이벨린의 색은 임시값입니다. 정해지면 accents 의 첫 번째 값만 바꾸면 됩니다.
+    id: 'scholasticate', group: 'pair', label: '이브리화', caption: '이벨린 & 서리화',
+    kind: 'dual', characters: ['이벨린', '서리화'], accents: ['#b9d9ec', '#342151'],
+    aliases: ['신학원'],
   },
   {
     id: 'maelstrom', group: 'pair', label: '흑와단', caption: '모험가 소대',
@@ -73,7 +76,6 @@ export const subTabs: SubTab[] = [
   { id: 'story', label: 'Story', caption: '본편' },
   { id: 'logs', label: 'Logs', caption: '썰' },
   { id: 'screenshots', label: 'Screenshots', caption: '스크린샷' },
-  { id: 'gallery', label: 'Gallery', caption: '그림' },
 ];
 
 /** 소분류를 갖는 중분류만 (= 연표 제외) */

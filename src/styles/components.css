@@ -434,6 +434,80 @@
   .log-card { padding: 1.15rem 1.25rem 1.25rem; }
 }
 
+/* ---------- 쪽 넘기기 ---------- */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 820px;
+  margin-inline: auto;
+  padding-block: 0.5rem 3.5rem;
+}
+.pager__list {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pager__num,
+.pager__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+.pager__num:hover,
+.pager__arrow:hover {
+  color: var(--accent-text);
+  border-color: var(--line-strong);
+  background: var(--paper-2);
+}
+.pager__num[aria-current='page'] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.pager__num[aria-current='page']:hover {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+/* 첫 쪽의 '이전', 마지막 쪽의 '다음' — 자리만 지키는 글자라 링크가 아닙니다. */
+span.pager__arrow {
+  color: var(--ink-3);
+  opacity: 0.35;
+  cursor: default;
+}
+span.pager__arrow:hover {
+  color: var(--ink-3);
+  border-color: transparent;
+  background: none;
+}
+.pager__gap {
+  padding-inline: 0.2rem;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 480px) {
+  .pager { gap: 0.35rem; }
+  .pager__arrow { font-size: var(--fs-xs); }
+}
+
 /* ---------- 연표 ---------- */
 .timeline { padding-block: 1.6rem 4rem; }
 

@@ -23,7 +23,10 @@ export const characters = {
     aliases: ['야슈톨라'],
   },
   '그레틴': { id: 'gretin', name: '그레틴', role: '모험가 소대원', color: '#E6B800' },
-  '신학원': { id: 'scholasticate', name: '신학원', role: '성 앙달림 신학원', color: '#b9d9ec' },
+  '이벨린': {
+    id: 'ivelyn', name: '이벨린', role: '성 앙달림 신학원', color: '#b9d9ec',
+    aliases: ['신학원'],
+  },
   '흑와단': { id: 'maelstrom', name: '흑와단', role: '모험가 소대', color: '#af1919' },
 } satisfies Record<string, Character>;
 
