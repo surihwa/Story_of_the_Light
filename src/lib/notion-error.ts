@@ -44,7 +44,10 @@ export function describeNotionError(err: unknown, label: string, envKey: string,
 
   if (status === 429 || code === 'rate_limited') {
     return `${head}
-  요청이 너무 잦아 잠시 차단되었습니다. 조금 뒤 다시 빌드하세요.`;
+  노션이 요청을 계속 거절했습니다. 여러 번 기다렸다 다시 시도했는데도 풀리지 않았습니다.
+  글이 아주 많거나, 같은 통합으로 다른 작업이 동시에 돌고 있을 수 있습니다.
+  잠시 뒤 Actions 탭에서 Re-run 해 보세요.
+  계속 그렇다면 src/lib/notion.ts 의 MIN_INTERVAL 을 500 정도로 올리면 완만해집니다.`;
   }
 
   return `${head}

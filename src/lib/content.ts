@@ -1,7 +1,7 @@
 import type { Post, TimelineEntry } from '@types';
 import { tabLabelToId } from '@config/tabs';
 import { sources, timelineSource } from '@config/sources';
-import { dbId, fetchBlocks, hasToken, queryAll } from './notion';
+import { dbId, fetchBlocks, getRequestCount, hasToken, queryAll } from './notion';
 import { toPost, toTimelineEntry } from './mapper';
 import { renderPage, reportUnsupportedBlocks } from './blocks';
 import { mockPosts, mockTimeline } from './mock';
@@ -40,33 +40,36 @@ async function loadPosts(): Promise<Post[]> {
 
   const posts: Post[] = [];
   const failures: string[] = [];
+  const startedAt = Date.now();
 
   for (const source of configured) {
-    let pages;
     try {
-      pages = await queryAll(dbId(source.env));
+      const pages = await queryAll(dbId(source.env));
+
+      for (const page of pages) {
+        const post = await toPost(page, source, tabLabelToId);
+        const body = await renderPage(await fetchBlocks(page.id));
+
+        post.html = body.html;
+        post.text = body.text;
+        // 파일 속성에 붙인 이미지와 본문에 넣은 이미지를 모두 모읍니다.
+        post.images = [...post.images, ...body.images];
+        if (!post.cover && post.images[0]) post.cover = post.images[0].src;
+
+        posts.push(post);
+      }
+
+      console.log(`[content] ${source.section}: ${pages.length}건`);
     } catch (err) {
       // 한 DB 가 막혔다고 바로 멈추지 않습니다.
       // 나머지도 확인해서 문제를 한 번에 모아 알려 주는 편이 고치기 쉽습니다.
       failures.push(describeNotionError(err, source.section, source.env, dbId(source.env)));
-      continue;
     }
-
-    for (const page of pages) {
-      const post = await toPost(page, source, tabLabelToId);
-      const body = await renderPage(await fetchBlocks(page.id));
-
-      post.html = body.html;
-      post.text = body.text;
-      // 파일 속성에 붙인 이미지와 본문에 넣은 이미지를 모두 모읍니다.
-      post.images = [...post.images, ...body.images];
-      if (!post.cover && post.images[0]) post.cover = post.images[0].src;
-
-      posts.push(post);
-    }
-
-    console.log(`[content] ${source.section}: ${pages.length}건`);
   }
+
+  console.log(
+    `[content] 노션 요청 ${getRequestCount()}회 · ${Math.round((Date.now() - startedAt) / 1000)}초`,
+  );
 
   // 다루지 못한 블록이 있었다면 여기서 한 번에 알려 줍니다.
   reportUnsupportedBlocks();
