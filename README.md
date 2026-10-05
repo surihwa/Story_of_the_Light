@@ -25,9 +25,6 @@ npm run build
 ## 디렉토리 구조
 
 ```
-media/                   Screenshots 원본 이미지 (직접 넣는 곳)
-scripts/
-└── build-media.mjs      빌드 전에 이미지를 최적화해 public/media/ 로 내보냄
 integrations/
 └── notion-assets.mjs    빌드 후 노션 이미지를 dist/ 로 옮기는 Astro 통합
 
@@ -42,7 +39,7 @@ src/
 ├── lib/             ← 로직. 화면을 그리지 않습니다.
 │   ├── notion.ts        Notion 클라이언트, DB 쿼리, 블록 재귀 조회
 │   ├── mapper.ts        노션 속성 → Post / TimelineEntry 변환
-│   ├── blocks.ts        노션 블록 → 본문 HTML · 평문 · 이미지 목록
+│   ├── blocks.ts        노션 블록 → 본문 HTML · 평문 · 이미지 목록 (29종 처리)
 │   ├── images.ts        만료되는 노션 이미지 URL을 빌드 때 내려받아 고정
 │   ├── content.ts       콘텐츠 진입점(캐싱 + 샘플 데이터 폴백)
 │   ├── filters.ts       탭·섹션 필터링, `세계 + Profile` 예외, 번호 정렬
@@ -56,8 +53,9 @@ src/
 │   ├── theme.css        FF14 라이트 UI(양각 패널, 모서리 컷, 배지)
 │   └── components.css   헤더 · 내비 · 카드 · 로그 다단 · 연표 · 본문
 │
-├── components/      Header, MainNav, SubNav, PostCard, LogCard, ProfileCard,
-│                    MediaGrid, Timeline, TimelineEntry, CharacterBadge,
+├── components/      Header, MainNav, SubNav, SectionView, PostCard, LogCard,
+│                    ProfileCard,
+│                    Pagination, Timeline, TimelineEntry, CharacterBadge,
 │                    EmptyState, Footer
 ├── layouts/         BaseLayout.astro
 ├── types/           공용 타입 정의
@@ -90,8 +88,6 @@ src/
 | Logs | (비워 둠) | `번호` (ID) | `탭` |
 | 연표 | `내용` | — | `시기`, `관련 캐릭터`, `순서`(선택) |
 
-**Screenshots 는 노션을 쓰지 않습니다.** 저장소의 `media/` 폴더에 파일을 넣습니다. → [media/README.md](media/README.md)
-
 > 노션은 DB마다 제목 속성을 하나 반드시 갖습니다. Logs는 그 칸을 그냥 비워 두면 되고, 사이트에서도 쓰이지 않습니다.
 
 `번호`는 숫자 속성이든 ID 속성이든 똑같이 읽습니다. ID 속성에 접두사를 지정하면(`LOG` 등) 사이트에도 `LOG-12` 형태로 표시됩니다.
@@ -105,30 +101,6 @@ src/
 
 ---
 
-## 이미지 (Screenshots)
-
-노션에 큰 이미지를 쌓으면 요금제 용량에 걸리고 파일 URL도 한 시간이면 만료됩니다. 그래서 이 둘만 저장소 파일로 관리합니다.
-
-```
-media/
-└── screenshots/
-    ├── surihwa/          ← 서리화 탭에 뜹니다
-    ├── frost_library/    ← 상서고 탭
-    └── world/            ← 세계 탭
-```
-
-폴더 이름은 중분류의 주소 이름과 같습니다. 파일 이름은 `012_눈 내리는 쿠르잔.jpg` 형태로, **번호가 큰 것이 위에 옵니다.** 파일 이름은 정렬 순서를 정하는 데만 쓰고 화면에는 나오지 않습니다(설명 부분은 대체 텍스트로만 쓰입니다). 자세한 규칙은 [media/README.md](media/README.md)에 있습니다.
-
-### 원본은 배포되지 않습니다
-
-`scripts/build-media.mjs`가 빌드 전에 카드용(400·800px 정사각)과 확대용(가로 1600px, 원본 비율) WebP를 만들어 `public/media/`로 내보냅니다. **원본은 저장소에만 남고 사이트에는 들어가지 않습니다.** 테스트로 5.9MB 원본 8장을 넣었을 때 배포물의 이미지는 2.0MB였습니다.
-
-한 번 변환한 파일은 다시 만들지 않으므로 사진이 늘어도 빌드가 느려지지 않고, 원본을 지우면 변환본도 함께 정리됩니다.
-
-목록은 **가로 3칸 정사각형 그리드**입니다(모바일에서는 2칸). 원본 비율이 제각각이어도 칸 크기가 일정하도록 가운데를 기준으로 잘라 보여 주고, 칸을 누르면 페이지를 떠나지 않고 그 자리에서 잘리지 않은 전체 그림이 뜹니다. 바깥을 누르거나 Esc로 닫습니다.
-
-칸 수를 바꾸려면 `src/styles/components.css`의 `.media`에서 `repeat(3, ...)`의 숫자를 고치면 됩니다.
-
 ---
 
 ## 설정 파일 다루기
@@ -140,7 +112,7 @@ media/
 ```
 OC · Pair · World          ← 대분류 (groups)
   └ 서리화 · 아젬 · 로레트 · 이스노티   ← 중분류 (mainTabs)
-      └ Profile · Story · Logs · Screenshots   ← 소분류 (subTabs)
+      └ Profile · Story · Logs   ← 소분류 (subTabs)
 ```
 
 | 대분류 | 중분류 | 주소 | 색 |
@@ -219,3 +191,15 @@ OC · Pair · World          ← 대분류 (groups)
 - Logs는 제목 없이 본문 전문을 한 장씩 위아래로 쌓아 보여 주고, **한 쪽에 10개씩 끊어 쪽을 넘깁니다.** 쪽당 개수는 `src/config/sources.ts`의 `LOGS_PER_PAGE`에서 바꿉니다. 주소는 1쪽이 `/탭/logs/`, 2쪽부터 `/탭/logs/2/` 형태이고, 쪽마다 HTML이 따로 생성되므로 링크를 그대로 공유할 수 있습니다. 다만 카드를 화면 폭 전체로 늘리면 한 줄이 너무 길어져 눈이 줄을 놓치므로, `820px`에서 멈추고 가운데로 모읍니다. 이 값은 `src/styles/components.css`의 `.log-list`에서 바꿀 수 있습니다.
 - 연표의 **마름모 노드**가 이 사이트의 시그니처입니다. 관련 캐릭터가 둘 이상이면 마름모를 색 수만큼 잘라 칠하기 때문에, 스크롤만 내려도 누구의 이야기가 언제 겹치는지 한눈에 보입니다.
 - 접근성: 키보드 포커스 링, `prefers-reduced-motion` 존중, 모바일 대응까지 기본으로 들어가 있습니다.
+
+## 노션 본문에서 지원하는 블록
+
+문단, 제목 1~3(토글 제목 포함), 글머리·번호 목록, 체크박스 목록, 인용, 콜아웃, 구분선, 코드, 수식, 이미지, 파일, 임베드, 영상, PDF, 북마크, 토글, **2·3단 배치**, 동기화 블록, 표.
+
+노션에는 블록 종류가 많아 처리하지 않은 것은 화면에서 조용히 사라집니다. 그래서 다루지 못한 블록을 만나면 빌드 로그에 남깁니다.
+
+```
+[blocks] 아직 다루지 않는 노션 블록이 있어 본문에서 빠졌습니다: xxx
+```
+
+이 경고가 보이면 `src/lib/blocks.ts`의 `switch`에 해당 타입을 추가하면 됩니다. 컨테이너 성격의 블록(자식을 품는 블록)은 반드시 자식을 따라 들어가야 안에 든 내용이 보존됩니다.

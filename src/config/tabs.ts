@@ -75,7 +75,6 @@ export const subTabs: SubTab[] = [
   { id: 'profile', label: 'Profile', caption: '설정' },
   { id: 'story', label: 'Story', caption: '본편' },
   { id: 'logs', label: 'Logs', caption: '썰' },
-  { id: 'screenshots', label: 'Screenshots', caption: '스크린샷' },
 ];
 
 /** 소분류를 갖는 중분류만 (= 연표 제외) */

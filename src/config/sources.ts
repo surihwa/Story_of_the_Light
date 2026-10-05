@@ -31,13 +31,6 @@ export const sources: SourceConfig[] = [
   { section: 'logs', env: 'NOTION_LOGS_DB', numberProp: '번호' },
 ];
 
-/**
- * Screenshots 는 노션을 쓰지 않습니다.
- * 저장소의 `media/screenshots/{탭 id}/` 폴더에 파일을 넣으면 됩니다.
- * 자세한 규칙은 media/README.md 를 보세요.
- */
-export const fileSections = ['screenshots'] as const;
-
 /** 탭 속성 이름 (모든 DB 공통) */
 export const TAB_PROP = '탭';
 

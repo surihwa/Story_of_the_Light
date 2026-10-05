@@ -3,7 +3,7 @@ import { tabLabelToId } from '@config/tabs';
 import { sources, timelineSource } from '@config/sources';
 import { dbId, fetchBlocks, hasToken, queryAll } from './notion';
 import { toPost, toTimelineEntry } from './mapper';
-import { renderPage } from './blocks';
+import { renderPage, reportUnsupportedBlocks } from './blocks';
 import { mockPosts, mockTimeline } from './mock';
 
 /**
@@ -57,6 +57,9 @@ async function loadPosts(): Promise<Post[]> {
 
     console.log(`[content] ${source.section}: ${pages.length}건`);
   }
+
+  // 다루지 못한 블록이 있었다면 여기서 한 번에 알려 줍니다.
+  reportUnsupportedBlocks();
 
   return posts;
 }

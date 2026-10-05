@@ -7,6 +7,3 @@ dist/
 .DS_Store
 public/notion-assets/
 
-# 이미지 변환 결과 — 원본은 media/ 에 있으므로 커밋하지 않습니다
-public/media/
-src/generated/

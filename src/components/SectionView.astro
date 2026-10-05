@@ -4,14 +4,12 @@ import SubNav from '@components/SubNav.astro';
 import PostCard from '@components/PostCard.astro';
 import LogCard from '@components/LogCard.astro';
 import ProfileCard from '@components/ProfileCard.astro';
-import MediaGrid from '@components/MediaGrid.astro';
 import EmptyState from '@components/EmptyState.astro';
 import Pagination from '@components/Pagination.astro';
-import { contentTabs, getSubTab, getGroup } from '@config/tabs';
+import { getSubTab, getGroup } from '@config/tabs';
 import { LOGS_PER_PAGE } from '@config/sources';
 import { getPosts } from '@lib/content';
 import { filterPosts } from '@lib/filters';
-import { getMedia, warnUnknownFolders } from '@lib/media';
 import type { MainTab, SectionId } from '@types';
 
 interface Props {
@@ -25,19 +23,12 @@ const { tab, section, page = 1 } = Astro.props;
 const sub = getSubTab(section)!;
 const group = getGroup(tab.group);
 
-/** Screenshots 는 저장소 파일에서, 나머지는 노션에서 읽습니다. */
-const isMedia = section === 'screenshots';
-const knownTabIds = contentTabs.map((t) => t.id);
-
-const media = isMedia ? getMedia(tab, section, knownTabIds) : [];
-const allPosts = isMedia ? [] : filterPosts(await getPosts(), tab, section);
-const count = isMedia ? media.length : allPosts.length;
-
-if (isMedia) warnUnknownFolders(knownTabIds);
+const allPosts = filterPosts(await getPosts(), tab, section);
+const count = allPosts.length;
 
 /** Logs 만 쪽을 나눕니다. */
 const paginated = section === 'logs';
-const totalPages = paginated ? Math.max(1, Math.ceil(allPosts.length / LOGS_PER_PAGE)) : 1;
+const totalPages = paginated ? Math.max(1, Math.ceil(count / LOGS_PER_PAGE)) : 1;
 const posts = paginated
   ? allPosts.slice((page - 1) * LOGS_PER_PAGE, page * LOGS_PER_PAGE)
   : allPosts;
@@ -62,16 +53,7 @@ const title = page > 1
   </header>
 
   {count === 0 ? (
-    <div style="padding-block:1.5rem 3rem">
-      <EmptyState
-        title={isMedia ? '아직 올린 이미지가 없습니다' : undefined}
-        hint={isMedia
-          ? `media/${section}/${tab.id}/ 폴더에 파일을 넣고 푸시하면 여기에 나타납니다.`
-          : undefined}
-      />
-    </div>
-  ) : isMedia ? (
-    <MediaGrid entries={media} />
+    <div style="padding-block:1.5rem 3rem"><EmptyState /></div>
   ) : section === 'profile' ? (
     <div class="grid grid--wide">
       {posts.map((post) => <ProfileCard post={post} />)}

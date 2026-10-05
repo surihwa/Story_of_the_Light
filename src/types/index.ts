@@ -37,7 +37,7 @@ export interface MainTab {
   accents: string[];
 }
 
-export type SectionId = 'profile' | 'story' | 'logs' | 'screenshots';
+export type SectionId = 'profile' | 'story' | 'logs';
 
 export interface SubTab {
   id: SectionId;
@@ -49,31 +49,6 @@ export interface Era {
   label: string;
   en: string;
   order: number;
-}
-
-/**
- * 저장소 파일에서 읽은 이미지 한 장.
- * Screenshots 에 쓰입니다.
- */
-export interface MediaVariant {
-  src: string;
-  width: number;
-}
-
-export interface MediaEntry {
-  /** 원본 파일 경로 (고유 키) */
-  id: string;
-  section: 'screenshots';
-  /** 파일이 들어 있던 폴더 = 중분류 id */
-  tabId: string;
-  /** 파일 이름 앞의 번호. 없으면 null */
-  number: number | null;
-  /** 파일 이름에서 뽑은 설명 */
-  caption: string;
-  width: number | null;
-  height: number | null;
-  /** 빌드 때 만들어 둔 크기별 WebP */
-  variants: { sm: MediaVariant; md: MediaVariant; lg: MediaVariant };
 }
 
 /** 노션 본문에 들어 있던 이미지 한 장 */
@@ -93,7 +68,7 @@ export interface Post {
   numberLabel: string;
   /** 번호를 어느 속성에서 읽었는지. 정렬 방향을 여기서 정합니다. */
   numberKind: 'number' | 'id' | null;
-  /** Story 는 제목, Profile 은 캐릭터명, Logs·Screenshots 는 빈 문자열 */
+  /** Story 는 제목, Profile 은 캐릭터명, Logs 는 빈 문자열 */
   title: string;
   tabs: string[];
   characters: string[];
