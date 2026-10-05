@@ -125,6 +125,39 @@ export async function renderPage(blocks: BlockObjectResponse[]): Promise<Rendere
 
     flush();
 
+    /*
+     * 제목은 단계를 가리지 않고 한 곳에서 처리합니다.
+     *
+     * heading_1~3 만 하드코딩해 두었더니 노션이 내려보낸 heading_4 가
+     * 통째로 사라졌습니다. 앞으로 heading_5 가 생겨도 같은 일이 없도록
+     * 'heading_' 으로 시작하는 블록은 전부 받습니다.
+     *
+     * 페이지 제목이 h1 이므로 노션의 1단계는 h2 부터 시작하고,
+     * HTML 에는 h6 까지만 있으므로 그 아래는 h6 로 모읍니다.
+     */
+    const headingLevel = /^heading_(\d+)$/.exec(block.type)?.[1];
+    if (headingLevel) {
+      const data = (block as unknown as Record<string, {
+        rich_text?: RichTextItemResponse[];
+        is_toggleable?: boolean;
+      }>)[block.type];
+      const items = data?.rich_text ?? [];
+      const tag = `h${Math.min(Number(headingLevel) + 1, 6)}`;
+
+      lines.push(plainOf(items));
+      const nested = await renderChildren(kids);
+
+      if (data?.is_toggleable && nested?.html) {
+        html.push(
+          `<details class="prose-toggle" open><summary><${tag}>${rich(items)}</${tag}></summary>${nested.html}</details>`,
+        );
+      } else {
+        html.push(`<${tag}>${rich(items)}</${tag}>`);
+        if (nested?.html) html.push(nested.html);
+      }
+      continue;
+    }
+
     switch (block.type) {
       case 'paragraph': {
         const inner = rich(block.paragraph.rich_text);
@@ -133,30 +166,6 @@ export async function renderPage(blocks: BlockObjectResponse[]): Promise<Rendere
           html.push(`<p>${inner}</p>`);
           if (nested?.html) html.push(nested.html);
           lines.push(plainOf(block.paragraph.rich_text));
-        }
-        break;
-      }
-
-      // ---- 제목. 노션의 '토글 제목'은 자식을 품으므로 반드시 따라 들어갑니다 ----
-      case 'heading_1':
-      case 'heading_2':
-      case 'heading_3': {
-        const data =
-          block.type === 'heading_1' ? block.heading_1
-          : block.type === 'heading_2' ? block.heading_2
-          : block.heading_3;
-        const tag = block.type === 'heading_1' ? 'h2' : block.type === 'heading_2' ? 'h3' : 'h4';
-
-        lines.push(plainOf(data.rich_text));
-        const nested = await renderChildren(kids);
-
-        if (data.is_toggleable && nested?.html) {
-          html.push(
-            `<details class="prose-toggle" open><summary><${tag}>${rich(data.rich_text)}</${tag}></summary>${nested.html}</details>`,
-          );
-        } else {
-          html.push(`<${tag}>${rich(data.rich_text)}</${tag}>`);
-          if (nested?.html) html.push(nested.html);
         }
         break;
       }
@@ -237,6 +246,14 @@ export async function renderPage(blocks: BlockObjectResponse[]): Promise<Rendere
         const src = urlOf(block.pdf);
         if (src) {
           html.push(`<p><a href="${escapeHtml(src)}" rel="noopener" target="_blank">PDF 보기</a></p>`);
+        }
+        break;
+      }
+
+      case 'audio': {
+        const src = urlOf(block.audio);
+        if (src) {
+          html.push(`<p><audio controls src="${escapeHtml(src)}"></audio></p>`);
         }
         break;
       }

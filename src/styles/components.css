@@ -344,7 +344,9 @@
 .log-card__body.prose > * + * { margin-top: 0.7rem; }
 .log-card__body.prose h2,
 .log-card__body.prose h3,
-.log-card__body.prose h4 { margin-top: 1.2rem; font-size: 1.02rem; }
+.log-card__body.prose h4,
+.log-card__body.prose h5,
+.log-card__body.prose h6 { margin-top: 1.2rem; font-size: 1.02rem; }
 .log-card__body.prose figure { margin: 1.1rem 0; }
 .log-card__body.prose blockquote,
 .log-card__body.prose li { font-family: var(--font-body); }
@@ -506,10 +508,21 @@ span.pager__arrow:hover {
   color: var(--ink);
 }
 .prose > * + * { margin-top: 1.15rem; }
-.prose h2, .prose h3, .prose h4 { margin-top: 2.2rem; color: var(--accent-text); }
+/* 노션의 제목 1~5 단계가 h2~h6 으로 내려옵니다. 깊어질수록 작아집니다. */
+.prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  margin-top: 2.2rem;
+  color: var(--accent-text);
+}
 .prose h2 { font-size: 1.35rem; }
 .prose h3 { font-size: 1.15rem; }
 .prose h4 { font-size: 1.02rem; }
+.prose h5 { font-size: 0.95rem; margin-top: 1.7rem; }
+.prose h6 {
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
 .prose a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
 .prose ul, .prose ol { padding-left: 1.3rem; }
 .prose li + li { margin-top: 0.35rem; }
